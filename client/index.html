@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+   <link rel="icon" type="image/svg+xml" href="/agroswap-logo.svg" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agroswapp</title>
+  </head>
+  <body>
+  <div id="loader" style="
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f0fdf4;
+    z-index:9999;">
+    
+    <!-- Paste SVG here -->
+    <svg width="260" height="70" viewBox="0 0 520 140" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .rotate {
+          animation: spin 4s linear infinite;
+          transform-origin: 50% 50%;
+          transform-box: fill-box;
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      </style>
+
+      <g class="rotate" transform="translate(10,20)" fill="none" stroke="#7CB342" stroke-width="8">
+        <circle cx="50" cy="50" r="45"/>
+      </g>
+
+      <text x="140" y="85" font-size="64" font-weight="700">
+        <tspan fill="#424242">Agro</tspan>
+        <tspan fill="#7CB342">Swap</tspan>
+      </text>
+    </svg>
+
+  </div>
+
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+
+  <script>
+    window.addEventListener("load", () => {
+      document.getElementById("loader").style.display = "none";
+    });
+  </script>
+</body>
+
+</html>

@@ -19,11 +19,11 @@ mongoose.connect(MONGOURL)
     console.log("✅ MongoDB Connected Successfully");
 
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("❌ MongoDB Connection Failed:", err.message);
+    console.error("MongoDB Connection Failed:", err.message);
   });
 
 // Basic Route

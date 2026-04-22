@@ -13,7 +13,6 @@ app.use(express.json());
 const MONGOURL = process.env.AGROSWAP_DB_URL;
 const PORT = process.env.PORT || 5000;
 
-// 🔥 Connect DB first, then start server
 mongoose.connect(MONGOURL)
   .then(() => {
     console.log("✅ MongoDB Connected Successfully");
@@ -26,7 +25,6 @@ mongoose.connect(MONGOURL)
     console.error("MongoDB Connection Failed:", err.message);
   });
 
-// Basic Route
 app.get("/", (req, res) => {
   res.send("AgroSwap Backend Running 🚜");
 });

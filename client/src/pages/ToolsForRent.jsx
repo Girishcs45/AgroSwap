@@ -8,6 +8,13 @@ import GlassCard from "../components/GlassCard";
 import { TOOLS } from '../Data/Tools';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import SearchIcon from '@mui/icons-material/Search';
+
+let user = null;
+try {
+  user = JSON.parse(localStorage.getItem("agroUser"));
+} catch {
+  user = null;
+}
 const CATEGORIES = [
   { name: "All", key: "All", icon: <BookmarksIcon size={18} /> },
   { name: "Tractors", key: "Tractor", icon: <Tractor size={18} /> },

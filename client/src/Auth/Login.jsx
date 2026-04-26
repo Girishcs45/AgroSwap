@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import {Users} from '../Data/Users';
+import { Users } from "../Data/Users";
 
 import {
   ShieldCheck,
@@ -24,10 +24,9 @@ import {
 } from "@mui/material";
 
 const LoginPage = () => {
-    const navigate = useNavigate();
-    const [emailOrMobile, setEmailOrMobile] = useState("");
-const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
+  const [emailOrMobile, setEmailOrMobile] = useState("");
+  const [password, setPassword] = useState("");
 
   const [role, setRole] = useState(0); // 0: Renter, 1: Lister
   const [showPass, setShowPass] = useState(false);
@@ -38,36 +37,34 @@ const [password, setPassword] = useState("");
     "bg-white/40 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-[32px]";
 
   const handleLogin = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!emailOrMobile || !password) {
-    alert("Please enter mobile/email and password");
-    return;
-  }
-
-  setLoading(true);
-
-  setTimeout(() => {
-    const user = Users.find(
-      (u) =>
-        u.role === (role === 0 ? "renter" : "lister") &&
-        (u.email === emailOrMobile || u.mobile === emailOrMobile) &&
-        u.password === password
-    );
-
-    if (!user) {
-      setLoading(false);
-      alert("Invalid credentials");
+    if (!emailOrMobile || !password) {
+      alert("Please enter mobile/email and password");
       return;
     }
 
-    localStorage.setItem("agroUser", JSON.stringify(user));
-    setLoading(false);
-    navigate(user.role === "renter" ? "/renter" : "/lister");
-  }, 1500);
-};
+    setLoading(true);
 
+    setTimeout(() => {
+      const user = Users.find(
+        (u) =>
+          u.role === (role === 0 ? "renter" : "lister") &&
+          (u.email === emailOrMobile || u.mobile === emailOrMobile) &&
+          u.password === password,
+      );
 
+      if (!user) {
+        setLoading(false);
+        alert("Invalid credentials");
+        return;
+      }
+
+      localStorage.setItem("agroUser", JSON.stringify(user));
+      setLoading(false);
+      navigate(user.role === "renter" ? "/renter" : "/lister");
+    }, 1500);
+  };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-emerald-50 via-teal-50 to-sky-100 flex items-center justify-center p-4 md:p-8 overflow-hidden relative font-sans">
@@ -143,48 +140,6 @@ const [password, setPassword] = useState("");
             </p>
           </div>
 
-          {/* Role Selector */}
-          <div className="bg-white/60 p-2 rounded-2xl shadow-inner mb-8">
-  <Tabs
-    value={role}
-    onChange={(e, v) => setRole(v)}
-    variant="fullWidth"
-    TabIndicatorProps={{ style: { display: "none" } }}
-    sx={{
-      "& .MuiTab-root": {
-        fontWeight: 900,
-        borderRadius: "14px",
-        minHeight: "44px",
-        textTransform: "none",
-        transition: "0.3s",
-        color: "#475569",
-      },
-    }}
-  >
-    <Tab
-      label="🌱 Renter"
-      sx={{
-        bgcolor: role === 0 ? '#14da5cff' : 'transparent',
-        color: role === 0 ? 'white !important' : '#475569',
-        boxShadow: role === 0 ? '0 8px 20px rgba(85, 216, 133, 0.35)' : 'none',
-        '&:hover': { bgcolor: role === 0 ? '#1dad51ff' : '#e5fbe9' }
-        ,
-      }}
-    />
-    <Tab
-      label="🚜 Lister"
-      sx={{
-       bgcolor: role === 1 ? '#0ea5e9' : 'transparent',
-        color: role === 1 ? 'white !important' : '#475569',
-        boxShadow: role === 1 ? '0 8px 20px rgba(14,165,233,0.35)' : 'none',
-        '&:hover': { bgcolor: role === 1 ? '#0284c7' : '#e0f2fe' 
-        },
-      }}
-    />
-  </Tabs>
-</div>
-
-
           <form className="space-y-5" onSubmit={handleLogin}>
             <AnimatePresence mode="wait">
               {!isOTP ? (
@@ -195,44 +150,47 @@ const [password, setPassword] = useState("");
                   exit={{ opacity: 0, x: -20 }}
                   className="space-y-4"
                 >
-                 <TextField
-  fullWidth
-  label="Mobile Number / Email"
-  value={emailOrMobile}
-  onChange={(e) => setEmailOrMobile(e.target.value)}
-  variant="outlined"
-  sx={{
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "16px",
-      backgroundColor: "rgba(255,255,255,0.5)",
-    },
-  }}
-/>
+                  <TextField
+                    fullWidth
+                    label="Mobile Number / Email"
+                    value={emailOrMobile}
+                    onChange={(e) => setEmailOrMobile(e.target.value)}
+                    variant="outlined"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "16px",
+                        backgroundColor: "rgba(255,255,255,0.5)",
+                      },
+                    }}
+                  />
 
                   <ul></ul>
                   <TextField
-  fullWidth
-  label="Password"
-  type={showPass ? "text" : "password"}
-  value={password}
-  onChange={(e) => setPassword(e.target.value)}
-  sx={{
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "16px",
-      backgroundColor: "rgba(255,255,255,0.5)",
-    },
-  }}
-  InputProps={{
-    endAdornment: (
-      <InputAdornment position="end">
-        <IconButton onClick={() => setShowPass(!showPass)}>
-          {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
-        </IconButton>
-      </InputAdornment>
-    ),
-  }}
-/>
-
+                    fullWidth
+                    label="Password"
+                    type={showPass ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: "16px",
+                        backgroundColor: "rgba(255,255,255,0.5)",
+                      },
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => setShowPass(!showPass)}>
+                            {showPass ? (
+                              <EyeOff size={20} />
+                            ) : (
+                              <Eye size={20} />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
                 </motion.div>
               ) : (
                 <motion.div

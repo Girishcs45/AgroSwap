@@ -27,9 +27,8 @@ const Home = () => {
         <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-200/40 rounded-full blur-[120px]" />
         <div className="absolute bottom-[10%] right-[-5%] w-[400px] h-[400px] bg-sky-200/30 rounded-full blur-[100px]" />
       </div>
-
+      
       <main className="relative z-10 container mx-auto px-6">
-
         {/* HERO */}
         <section className="py-24 text-center">
           {user && (
@@ -69,7 +68,7 @@ const Home = () => {
                   <InputAdornment position="start">
                     <Search className="text-emerald-500 ml-2" />
                   </InputAdornment>
-                )
+                ),
               }}
             />
             <Button
@@ -77,7 +76,67 @@ const Home = () => {
               className="bg-emerald-600 hover:bg-emerald-700 rounded-xl px-6"
             >
               Search
-            </Button>
+            </CustomButton>
+          </div>
+        </section>
+
+        {/* TOOLS */}
+        <section className="py-5">
+          <h2 className="text-3xl font-bold text-center mb-10 text-slate-800">
+            Available Tools 🚜
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {TOOLS.filter((t) => t.status !== "Booked")
+              .slice(0, 4)
+              .map((tool) => (
+                <motion.div
+                  key={tool.id}
+                  whileHover={{ scale: 1.03 }}
+                  className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all cursor-pointer"
+                  onClick={() =>
+                    navigate(`/tooldetails/${tool.id}`, { state: tool })
+                  }
+                >
+                  <img
+                    src={tool.img}
+                    alt={tool.name}
+                    className="w-full h-40 object-cover rounded-xl mb-3"
+                  />
+
+                  <div className="flex justify-between mb-2">
+                    <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">
+                      Available
+                    </span>
+                    <span className="text-xs text-amber-500 font-bold">
+                      ⭐ 4.5
+                    </span>
+                  </div>
+
+                  <h3 className="font-bold text-slate-800">{tool.name}</h3>
+
+                  <p className="text-sm text-slate-500 mb-2">
+                    {tool.location?.address || "Nearby"}
+                  </p>
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-emerald-600 font-bold">
+                      ₹{tool.price}/{tool.unit}
+                    </span>
+
+                    <CustomButton
+                      variantType="success"
+                      size="small"
+                      sx={{
+                        borderRadius: "999px",
+                        px: 4,
+                      }}
+                    >
+                      view
+                    </CustomButton>
+                  </div>
+                </motion.div>
+              ))}
           </div>
 
           {/* CTA */}
@@ -202,6 +261,62 @@ const Home = () => {
           </p>
         </section>
 
+        {/* VISION */}
+
+        <section className="py-16 px-4 mb-24">
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-3xl p-8 md:p-12 shadow-2xl text-white relative overflow-hidden"
+            >
+              {/* 🔥 Background Glow */}
+              <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
+
+              <div className="relative z-10 grid md:grid-cols-2 gap-10 items-center">
+                {/* LEFT CONTENT */}
+                <div>
+                  <h2 className="text-3xl md:text-5xl font-bold mb-4 flex items-center gap-3">
+                    <Psychology className="text-white/90" fontSize="large" />
+                    Our Vision
+                  </h2>
+
+                  <p className="text-white/80 mb-6 leading-relaxed">
+                    To digitize agriculture and empower every farmer with fair
+                    access, transparency, and equal opportunities across
+                    markets. We aim to bridge the gap between rural producers
+                    and modern digital systems.
+                  </p>
+                </div>
+
+                {/* RIGHT VISUAL */}
+                <div className="hidden md:flex items-center justify-center">
+                  <div className="relative">
+                    {/* Optional highlight points */}
+                    <div className="space-y-2 text-white/80 text-sm">
+                      <p>🌱 Empower farmers with digital tools</p>
+                      <p>🚜 Increase income through smart access</p>
+                      <p>🌍 Build a transparent agricultural ecosystem</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom strip */}
+              <div className="relative z-10 mt-8 pt-3 border-t border-white/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p className="text-white/80 text-sm">
+                  🌾 Driving the future of digital farming
+                </p>
+                <p className="text-white font-semibold text-sm flex items-center gap-1">
+                  Innovation meets agriculture
+                  <span>🚀</span>
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
       </main>
     </div>
   );

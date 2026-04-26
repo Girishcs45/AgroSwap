@@ -21,11 +21,11 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { icon: <Facebook />, color: 'hover:text-blue-600' },
-    { icon: <Twitter />, color: 'hover:text-sky-400' },
-    { icon: <Instagram />, color: 'hover:text-pink-500' },
-    { icon: <LinkedIn />, color: 'hover:text-blue-700' },
-  ];
+  { icon: <Facebook />, hoverColor: '#2563eb' },
+  { icon: <Twitter />, hoverColor: '#38bdf8' },
+  { icon: <Instagram />, hoverColor: '#ec4899' },
+  { icon: <LinkedIn />, hoverColor: '#1d4ed8' },
+];
 
   return (
     <footer id="about" className="relative">
@@ -59,9 +59,19 @@ const Footer = () => {
             <div className="flex gap-2">
               {socialLinks.map((social, i) => (
                 <motion.div key={i} whileHover={{ scale: 1.2, y: -2 }}>
-                  <IconButton className={`bg-white/50 backdrop-blur-md shadow-sm ${social.color} transition-all`}>
-                    {social.icon}
-                  </IconButton>
+                  <IconButton
+  sx={{
+    backgroundColor: "rgba(255,255,255,0.5)",
+    backdropFilter: "blur(10px)",
+    boxShadow: 1,
+    transition: "all 0.3s",
+    "&:hover": {
+      color: social.hoverColor
+    }
+  }}
+>
+  {social.icon}
+</IconButton>
                 </motion.div>
               ))}
             </div>

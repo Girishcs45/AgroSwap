@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-
+import CustomButton from "../../components/CustomButton";
 import { useLocation } from 'react-router-dom';
 
 import { 
@@ -94,10 +94,7 @@ if (!formData) return <div>Loading...</div>;
             <h1 className="text-4xl font-black text-slate-800">Edit <span className="text-emerald-600">Listing</span></h1>
             <p className="text-slate-500 font-medium">Tool ID: {id || 'JD-5050D'}</p>
           </div>
-          <div className="flex gap-3">
-            <Button onClick={() => navigate(-1)} variant="outlined" className="rounded-xl border-slate-200 text-slate-500 font-bold normal-case">Cancel</Button>
-            <Button onClick={handleUpdate} variant="contained" startIcon={<Save size={18} />} className="bg-emerald-600 hover:bg-emerald-700 rounded-xl px-6 font-bold normal-case shadow-lg shadow-emerald-100">Save Changes</Button>
-          </div>
+          
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -199,6 +196,7 @@ if (!formData) return <div>Loading...</div>;
                 </button>
               </div>
             </GlassBox>
+           
 
             {/* DANGER ZONE */}
             <div className="pt-10 flex justify-center">
@@ -246,9 +244,42 @@ if (!formData) return <div>Loading...</div>;
                   </p>
                 </div>
               </GlassBox>
+               <div className="flex gap-4 hidden md:flex items-center justify-center">
+
+  {/* CANCEL */}
+  <CustomButton
+    variantType="danger"
+    size="large"
+    onClick={() => navigate(-1)}
+    sx={{
+      px: 3,
+      borderRadius: "999px",
+      letterSpacing: "0.5px",
+    }}
+  >
+    Cancel
+  </CustomButton>
+
+  {/* SAVE */}
+  <CustomButton
+    variantType="success"
+    size="large"
+    onClick={handleUpdate}
+    startIcon={<Save size={18} />}
+    sx={{
+      px: 4,
+      borderRadius: "999px",
+      letterSpacing: "0.5px",
+    }}
+  >
+    Save Changes
+  </CustomButton>
+
+</div>
             </div>
           </div>
         </div>
+        
       </div>
 
       {/* DELETE MODAL */}

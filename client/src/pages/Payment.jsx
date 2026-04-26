@@ -171,7 +171,7 @@ const totalAmount = rentAmount + platformFee + insuranceFee + securityDeposit;
                  <h4 className="font-bold text-slate-800">{tool.name}</h4>
                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{tool.category}</p>
                  <div className="flex items-center gap-1 text-[10px] text-slate-500 mt-1">
-                   <MapPin size={10}/> {tool.location}
+                   <MapPin size={10}/> {tool.location?.address}
                  </div>
                </div>
              </div>

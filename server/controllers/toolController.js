@@ -104,3 +104,69 @@ export const getUserTools = async (req, res) => {
     });
   }
 };
+
+
+export const updateToolController = async (req, res) => {
+  try {
+    const updatedTool = await Tool.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { returnDocument: "after" }
+    );
+
+    res.status(200).json(updatedTool);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const deleteToolController = async (req, res) => {
+  try {
+    await Tool.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      message: "Tool deleted successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const toggleToolVisibility = async (req, res) => {
+  try {
+    const tool = await Tool.findById(req.params.id);
+
+    if (!tool) {
+      return res.status(404).json({
+        success: false,
+        message: "Tool not found",
+      });
+    }
+
+    // toggle value
+    tool.isActive = !tool.isActive;
+
+    await tool.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Tool ${
+        tool.isActive ? "activated" : "paused"
+      } successfully`,
+      tool,
+    });
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update visibility",
+    });
+  }
+};

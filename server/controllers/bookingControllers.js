@@ -19,7 +19,7 @@ export const createBooking = async (req, res) => {
     const end = new Date(toDate);
     end.setHours(23, 59, 59, 999);
 
-    // ❌ Prevent invalid date selection
+       // ❌ Prevent invalid date selection
     if (start > end) {
       return res.status(400).json({
         success: false,
@@ -173,4 +173,6 @@ export const getMyBookings = async (req, res) => {
       message: "Failed to fetch bookings",
     });
   }
+  
 };
+

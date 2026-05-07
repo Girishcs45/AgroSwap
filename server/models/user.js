@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
+
+     profileImage: {
+  type: String,
+  default: "",
+},
     fullName: {
       type: String,
       required: true,

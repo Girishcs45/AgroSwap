@@ -51,7 +51,7 @@ const Signup = () => {
   const [activeStep, setActiveStep] = useState(0); // Stepper control
   const [showPass, setShowPass] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
-
+const [profilePhotoFile, setProfilePhotoFile] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
     mobile: "",
@@ -93,7 +93,9 @@ const Signup = () => {
         !formData.password
         // formData.password !== formData.confirmPassword
       ) {
-       toast.error("Please fill all required fields and ensure passwords match.");
+        toast.error(
+          "Please fill all required fields and ensure passwords match.",
+        );
         return;
       }
     }
@@ -111,21 +113,33 @@ const Signup = () => {
         !formData.state ||
         !formData.agreeToTerms
       ) {
-       toast.error("Please fill all required profile info and agree to terms.");
+        toast.error(
+          "Please fill all required profile info and agree to terms.",
+        );
         return;
       }
     }
 
     try {
       // 🔥 CALL YOUR SERVICE HERE
-      const data = await SignupService(formData);
+      const submitData = new FormData();
+
+      Object.keys(formData).forEach((key) => {
+        submitData.append(key, formData[key]);
+      });
+
+      if (profilePhotoFile) {
+        submitData.append("profileImage", profilePhotoFile);
+      }
+
+      const data = await SignupService(submitData);
       console.log(data);
       if (data?.success && data?.user) {
         toast.success("Signup Successfully");
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/");
-      }
+      } 
 
       // 🎉 Success UI
       // setShowSuccess(true);
@@ -135,16 +149,21 @@ const Signup = () => {
       toast.error(error?.response?.data?.message || "Something went wrong");
     }
   };
-  const handlePhotoUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const handlePhotoUpload = (e) => {
+  const file = e.target.files[0];
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProfilePhoto(reader.result); // base64 string
-    };
-    reader.readAsDataURL(file);
+  if (!file) return;
+
+  setProfilePhotoFile(file);
+
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    setProfilePhoto(reader.result);
   };
+
+  reader.readAsDataURL(file);
+};
 
   const stepperLabels = ["Account", "Profile"];
 
@@ -584,19 +603,18 @@ const Signup = () => {
                     }
                   />
 
-                  
-                    <CustomButton
-                      fullWidth
-                      type="submit"
-                      variantType="success"
-                      size="large"
-                      sx={{
-                        fontWeight: 900,
-                      }}
-                    >
-                      Create Account <CheckCircle2 size={20} className="ml-2" />
-                    </CustomButton>
-                  
+                  <CustomButton
+                    fullWidth
+                    type="submit"
+                    variantType="success"
+                    size="large"
+                    sx={{
+                      fontWeight: 900,
+                    }}
+                  >
+                    Create Account <CheckCircle2 size={20} className="ml-2" />
+                  </CustomButton>
+
                   <Button
                     onClick={handleBack}
                     className="text-slate-500 font-bold mt-2"

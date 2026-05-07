@@ -1,10 +1,9 @@
-import { useState , useEffect} from "react";
-import { motion} from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   Search,
   MapPin,
   Calendar,
-  Star,
   Filter,
   ArrowRight,
   Tractor,
@@ -15,22 +14,29 @@ import {
   Wrench,
   Sprout,
   Target,
-  Grip,
 } from "lucide-react";
-import { Chip, Avatar, Button, TextField, InputAdornment } from "@mui/material";
+
+import {
+  Chip,
+  Avatar,
+} from "@mui/material";
+
 import { useNavigate } from "react-router-dom";
+
 import GlassCard from "../components/GlassCard";
-import { TOOLS } from "../Data/Tools";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import SearchIcon from "@mui/icons-material/Search";
+
 import { getAllTools } from "../services/tool.services";
 
 let user = null;
+
 try {
   user = JSON.parse(localStorage.getItem("user"));
 } catch {
   user = null;
 }
+
 const CATEGORIES = [
   { name: "All", key: "All", icon: <BookmarksIcon size={18} /> },
   { name: "Tractors", key: "Tractor", icon: <Tractor size={18} /> },
@@ -41,74 +47,255 @@ const CATEGORIES = [
   { name: "Seeders", key: "Seeder", icon: <Sprout size={18} /> },
   { name: "Balers", key: "Baler", icon: <Target size={18} /> },
 ];
+
+
+// ---------------- TOOL CARD ----------------
+
 const ToolCard = ({ tool, navigate }) => (
   <motion.div
     layout
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 30 }}
     animate={{ opacity: 1, y: 0 }}
-    whileHover={{ y: -10, scale: 1.02 }}
-    className="relative group"
+    whileHover={{ y: -8 }}
+    transition={{ duration: 0.3 }}
+    className="group"
   >
-    <GlassCard className="overflow-hidden h-full flex flex-col transition-all duration-300 group-hover:shadow-2xl group-hover:border-green-300/50">
-      {/* Tool Image */}
-      <div className="relative h-48 overflow-hidden">
+
+    <div
+      className="
+        relative overflow-hidden
+        rounded-[36px]
+        bg-white/80
+        backdrop-blur-2xl
+        border border-white
+        shadow-[0_10px_50px_rgba(15,23,42,0.08)]
+        hover:shadow-[0_20px_70px_rgba(15,23,42,0.12)]
+        transition-all duration-500
+        h-full
+      "
+    >
+
+      {/* IMAGE */}
+      <div className="relative h-60 overflow-hidden">
+
         <img
           src={tool.image}
           alt={tool.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="
+            w-full h-full object-cover
+            transition-transform duration-700
+            group-hover:scale-110
+          "
         />
-        <div className="absolute top-3 right-3">
-          <Chip
-            label={tool.status}
-            size="small"
-            className={`${tool.status === "Available Today" ? "bg-green-500/80" : "bg-orange-500/80"} text-white backdrop-blur-md`}
-          />
-        </div>
-      </div>
 
-      {/* Content */}
-      <div className="p-5 flex-grow">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-xl font-bold text-slate-800">{tool.name}</h3>
-        </div>
+        {/* OVERLAY */}
+        <div className="
+          absolute inset-0
+          bg-gradient-to-t from-black/60 via-black/10 to-transparent
+        " />
+        {!tool.isActive && (
+  <div className="
+    absolute inset-0
+    bg-black/50
+    backdrop-blur-[2px]
+    flex items-center justify-center
+    z-20
+  ">
+    <div className="
+      px-6 py-3
+      rounded-2xl
+      bg-red-500
+      text-white
+      font-black
+      uppercase tracking-[2px]
+      text-sm
+      shadow-xl
+    ">
+      Currently Unavailable
+    </div>
+  </div>
+)}
 
-        <div className="flex items-center text-slate-600 text-sm mb-4 space-x-3">
-          <div className="flex items-center">
-            <MapPin size={14} className="mr-1" /> {tool.location}
+        {/* STATUS */}
+        <div className="absolute top-5 left-5">
+
+          <div className={`
+            px-4 py-2 rounded-2xl
+            text-[10px]
+            uppercase tracking-[2px]
+            font-black
+            backdrop-blur-xl
+
+            ${tool.status === "Available Today"
+              ? "bg-emerald-500/90 text-white"
+              : "bg-orange-500/90 text-white"
+            }
+          `}>
+            {tool.status}
           </div>
-          <div className="flex items-center font-semibold text-green-700">
+
+        </div>
+
+        {/* PRICE */}
+        <div className="
+          absolute bottom-5 right-5
+          bg-white/90
+          backdrop-blur-xl
+          px-4 py-3
+          rounded-2xl
+          shadow-lg
+        ">
+
+          <p className="text-[10px] uppercase tracking-[2px] text-slate-400 font-black">
+            Per Day
+          </p>
+
+          <h3 className="text-2xl font-black text-emerald-600">
             ₹{tool.price}
-          </div>
+          </h3>
+
         </div>
 
-        <div className="flex items-center space-x-2 p-2 bg-white/20 rounded-xl mb-5">
-          <Avatar sx={{ width: 24, height: 24 }} />
-          <span className="text-xs text-slate-700 font-medium">
-            Owned by {tool.owner.fullName}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            className="py-2 px-4 rounded-xl border border-green-600/30 text-green-700 font-semibold hover:bg-green-600/10 transition-colors"
-            onClick={() => navigate(`/tooldetails/${tool._id}`, { state: tool })}
-          >
-            Details
-          </button>
-
-          <button className="py-2 px-4 rounded-xl bg-green-600 text-white font-semibold shadow-lg shadow-green-200 hover:bg-green-700 transition-all">
-            Rent Now
-          </button>
-        </div>
       </div>
-    </GlassCard>
+
+      {/* CONTENT */}
+      <div className="p-6">
+
+        {/* TITLE */}
+        <div className="mb-4">
+
+          <h2 className="
+            text-2xl
+            font-black
+            text-slate-900
+            tracking-tight
+          ">
+            {tool.name}
+          </h2>
+
+          <div className="
+            flex items-center gap-2
+            text-slate-500
+            text-sm
+            mt-2
+          ">
+            <MapPin size={15} className="text-emerald-500" />
+            {tool.location}
+          </div>
+
+        </div>
+
+        {/* OWNER */}
+        <div className="
+          flex items-center gap-3
+          p-4
+          rounded-[24px]
+          bg-slate-50
+          border border-slate-100
+          mb-6
+        ">
+
+          <Avatar
+            sx={{
+              width: 42,
+              height: 42,
+              bgcolor: "#16a34a",
+              fontWeight: "bold",
+            }}
+          >
+            {tool?.owner?.fullName?.charAt(0)?.toUpperCase()}
+          </Avatar>
+
+          <div>
+
+            <p className="
+              text-[10px]
+              uppercase
+              tracking-[2px]
+              text-slate-400
+              font-black
+            ">
+              Owner
+            </p>
+
+            <h4 className="font-black text-slate-800">
+              {tool.owner.fullName}
+            </h4>
+
+          </div>
+
+        </div>
+
+        {/* BUTTONS */}
+        <div className="grid grid-cols-2 gap-4">
+
+          <button
+            onClick={() =>
+              navigate(`/tooldetails/${tool._id}`, { state: tool })
+            }
+            className="
+              py-4
+              rounded-[22px]
+              border border-emerald-200
+              bg-emerald-50
+              text-emerald-700
+              font-black
+              hover:bg-emerald-100
+              transition-all
+            "
+          >
+            View Details
+          </button>
+
+          <button
+  disabled={!tool.isActive}
+  onClick={() =>
+    tool.isActive &&
+    navigate(`/tooldetails/${tool._id}`, { state: tool })
+  }
+  className={`
+    py-4
+    rounded-[22px]
+    text-white
+    font-black
+    transition-all duration-300
+
+    ${
+      tool.isActive
+        ? `
+          bg-gradient-to-r from-emerald-600 to-green-500
+          hover:from-emerald-700 hover:to-green-600
+          shadow-[0_15px_35px_rgba(16,185,129,0.28)]
+          hover:scale-[1.02]
+        `
+        : `
+          bg-slate-300
+          cursor-not-allowed
+          opacity-70
+        `
+    }
+  `}
+>
+  {tool.isActive ? "Rent Now" : "Unavailable"}
+</button>
+
+        </div>
+
+      </div>
+
+    </div>
   </motion.div>
 );
 
-// --- Main Page Component ---
+
+// ---------------- PAGE ----------------
 
 export default function ToolsForRent() {
+
   const [tools, setTools] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTools = async () => {
@@ -118,188 +305,502 @@ export default function ToolsForRent() {
       } catch (error) {
         console.error("Failed to fetch tools:", error);
       }
-      //  finally {
-      //   setLoading(false);
-      // }
     };
 
     fetchTools();
   }, []);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+
   const filteredTools =
     selectedCategory === "All"
       ? tools
       : tools.filter((tool) => tool.category === selectedCategory);
 
-  const navigate = useNavigate();
   return (
-    
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-sky-50 to-emerald-100 pt-20 pb-12 px-4 md:px-8 overflow-hidden">
-        {/* Animated Background Blobs */}
-        <div className="fixed inset-0 z-0 pointer-events-none">
-          <motion.div
-            animate={{ x: [0, 100, 0], y: [0, 50, 0] }}
-            transition={{ duration: 20, repeat: Infinity }}
-            className="absolute -top-24 -left-24 w-96 h-96 bg-green-200/40 rounded-full blur-3xl"
-          />
-          <motion.div
-            animate={{ x: [0, -50, 0], y: [0, 100, 0] }}
-            transition={{ duration: 15, repeat: Infinity }}
-            className="absolute top-1/2 -right-24 w-80 h-80 bg-sky-200/40 rounded-full blur-3xl"
-          />
-        </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto">
-          {/* 1. Hero Section */}
-          <section className="text-center mb-12">
-            <motion.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-black text-slate-800 mb-4"
-            >
-              Rent Farming Tools{" "}
-              <span className="text-green-600">Near You</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-lg text-slate-600 mb-8"
-            >
-              Affordable, reliable tools directly from farmers in your
-              community.
-            </motion.p>
+    <div className="
+      min-h-screen
+      bg-[#f6f9f8]
+      pt-24
+      pb-24
+      px-4 md:px-8
+      overflow-hidden
+      relative
+    ">
 
-            <GlassCard className="max-w-4xl mx-auto p-3 md:p-4 rounded-3xl shadow-xl">
-              <div className="flex flex-col md:flex-row items-center gap-3">
-                {/* Tool Search */}
-                <div className="flex items-center bg-white/70 rounded-2xl px-4 py-3 flex-1 shadow-inner">
-                  <Search className="text-slate-400 mr-2" size={18} />
-                  <input
-                    type="text"
-                    placeholder="Search tool (Tractor, Drone, Harvester...)"
-                    className="bg-transparent outline-none w-full text-sm font-medium text-slate-700 placeholder-slate-400"
-                  />
-                </div>
+      {/* TOP GRADIENT */}
+      <div className="
+        absolute top-0 inset-x-0
+        h-[420px]
+        bg-gradient-to-b from-emerald-100/40 to-transparent
+        pointer-events-none
+      " />
 
-                {/* Location */}
-                <div className="flex items-center bg-white/70 rounded-2xl px-4 py-3 flex-1 shadow-inner">
-                  <MapPin className="text-slate-400 mr-2" size={18} />
-                  <input
-                    type="text"
-                    placeholder="Enter village / city"
-                    className="bg-transparent outline-none w-full text-sm font-medium text-slate-700 placeholder-slate-400"
-                  />
-                </div>
+      {/* BG BLOBS */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
 
-                {/* Date */}
-                <div className="flex items-center bg-white/70 rounded-2xl px-4 py-3 shadow-inner">
-                  <Calendar className="text-slate-400 mr-2" size={18} />
-                  <input
-                    type="date"
-                    className="bg-transparent outline-none text-sm font-medium text-slate-600"
-                  />
-                </div>
+        <motion.div
+          animate={{
+            x: [0, 80, 0],
+            y: [0, 50, 0]
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity
+          }}
+          className="
+            absolute top-[-120px] left-[-120px]
+            w-[420px] h-[420px]
+            bg-emerald-300/20
+            rounded-full blur-[120px]
+          "
+        />
 
-                {/* Search Button */}
-                <button className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-md">
-                  <SearchIcon />
-                </button>
+        <motion.div
+          animate={{
+            x: [0, -60, 0],
+            y: [0, 80, 0]
+          }}
+          transition={{
+            duration: 16,
+            repeat: Infinity
+          }}
+          className="
+            absolute bottom-[-120px] right-[-120px]
+            w-[360px] h-[360px]
+            bg-sky-300/20
+            rounded-full blur-[120px]
+          "
+        />
+
+      </div>
+
+      {/* CONTENT */}
+      <div className="relative z-10 max-w-7xl mx-auto">
+
+        {/* HERO */}
+        <section className="text-center mb-16">
+
+          <motion.h1
+            initial={{ opacity: 0, y: -25 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="
+              text-5xl md:text-7xl
+              font-black
+              tracking-tight
+              text-slate-900
+              leading-[1]
+              mb-6
+            "
+          >
+            Rent Farming Tools
+            <br />
+
+            <span className="text-emerald-600">
+              Near You
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="
+              text-lg
+              text-slate-500
+              max-w-2xl
+              mx-auto
+              leading-relaxed
+              mb-10
+            "
+          >
+            Discover affordable farming equipment directly from trusted
+            farmers in your local community.
+          </motion.p>
+
+          {/* SEARCH BAR */}
+          <div className="
+            max-w-5xl
+            mx-auto
+            bg-white/80
+            backdrop-blur-2xl
+            border border-white
+            rounded-[36px]
+            shadow-[0_10px_50px_rgba(15,23,42,0.08)]
+            p-4 md:p-5
+          ">
+
+            <div className="
+              grid grid-cols-1 md:grid-cols-4
+              gap-4
+            ">
+
+              {/* SEARCH */}
+              <div className="
+                flex items-center gap-3
+                bg-slate-50
+                rounded-[24px]
+                px-5 py-4
+                border border-slate-100
+              ">
+
+                <Search size={18} className="text-slate-400" />
+
+                <input
+                  type="text"
+                  placeholder="Search tool..."
+                  className="
+                    bg-transparent
+                    outline-none
+                    w-full
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                    placeholder:text-slate-400
+                  "
+                />
+
               </div>
-            </GlassCard>
-          </section>
 
-          {/* 2. Categories */}
-          <section className="mb-12">
-            <div className="flex overflow-x-auto pb-4 space-x-4 no-scrollbar scroll-smooth">
-              {CATEGORIES.map((cat, idx) => (
-                <motion.button
-                  key={idx}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedCategory(cat.key)}
-                  className={`flex items-center space-x-2 px-6 py-3 backdrop-blur-md border rounded-full shadow-sm whitespace-nowrap transition-all font-medium
-      ${
-        selectedCategory === cat.key
-          ? "bg-green-600 text-white border-green-600"
-          : "bg-white/40 text-slate-700 border-white/60 hover:bg-green-500 hover:text-white"
-      }
-    `}
-                >
-                  {cat.icon} <span>{cat.name}</span>
-                </motion.button>
-              ))}
+              {/* LOCATION */}
+              <div className="
+                flex items-center gap-3
+                bg-slate-50
+                rounded-[24px]
+                px-5 py-4
+                border border-slate-100
+              ">
+
+                <MapPin size={18} className="text-slate-400" />
+
+                <input
+                  type="text"
+                  placeholder="Village / City"
+                  className="
+                    bg-transparent
+                    outline-none
+                    w-full
+                    text-sm
+                    font-semibold
+                    text-slate-700
+                    placeholder:text-slate-400
+                  "
+                />
+
+              </div>
+
+              {/* DATE */}
+              <div className="
+                flex items-center gap-3
+                bg-slate-50
+                rounded-[24px]
+                px-5 py-4
+                border border-slate-100
+              ">
+
+                <Calendar size={18} className="text-slate-400" />
+
+                <input
+                  type="date"
+                  className="
+                    bg-transparent
+                    outline-none
+                    w-full
+                    text-sm
+                    font-semibold
+                    text-slate-600
+                  "
+                />
+
+              </div>
+
+              {/* BUTTON */}
+              <button
+                className="
+                  rounded-[24px]
+                  bg-gradient-to-r from-emerald-600 to-green-500
+                  hover:from-emerald-700 hover:to-green-600
+                  text-white
+                  font-black
+                  shadow-[0_15px_35px_rgba(16,185,129,0.28)]
+                  transition-all duration-300
+                  hover:scale-[1.02]
+                  flex items-center justify-center gap-2
+                "
+              >
+
+                <SearchIcon />
+
+                Search
+
+              </button>
+
             </div>
-          </section>
 
-          {/* 3. Tool Grid */}
-          <section className="mb-20">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-bold text-slate-800">
+          </div>
+
+        </section>
+
+        {/* CATEGORIES */}
+        <section className="mb-16">
+
+          <div className="
+            flex overflow-x-auto
+            gap-4
+            pb-2
+            no-scrollbar
+          ">
+
+            {CATEGORIES.map((cat, idx) => (
+
+              <motion.button
+                key={idx}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => setSelectedCategory(cat.key)}
+                className={`
+                  flex items-center gap-3
+                  px-6 py-4
+                  rounded-[22px]
+                  whitespace-nowrap
+                  font-black
+                  transition-all duration-300
+                  border
+
+                  ${selectedCategory === cat.key
+                    ? `
+                      bg-gradient-to-r from-emerald-600 to-green-500
+                      text-white
+                      border-emerald-500
+                      shadow-[0_15px_35px_rgba(16,185,129,0.28)]
+                    `
+                    : `
+                      bg-white/80
+                      backdrop-blur-xl
+                      border-white
+                      text-slate-700
+                      hover:bg-emerald-50
+                    `
+                  }
+                `}
+              >
+
+                {cat.icon}
+
+                {cat.name}
+
+              </motion.button>
+
+            ))}
+
+          </div>
+
+        </section>
+
+        {/* HEADER */}
+        <section className="mb-8">
+
+          <div className="flex items-center justify-between">
+
+            <div>
+
+              <h2 className="
+                text-4xl
+                font-black
+                tracking-tight
+                text-slate-900
+              ">
                 Available Tools
               </h2>
-              <button className="flex items-center text-green-700 font-semibold hover:underline">
-                Filters <Filter size={18} className="ml-1" />
-              </button>
+
+              <p className="text-slate-500 mt-2">
+                {filteredTools.length} tools available near you
+              </p>
+
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredTools.map((tool) => (
-                <ToolCard key={tool.id} tool={tool} navigate={navigate} />
-              ))}
-            </div>
-          </section>
+            <button
+              className="
+                flex items-center gap-2
+                px-5 py-3
+                rounded-[22px]
+                bg-white/80
+                backdrop-blur-xl
+                border border-white
+                text-slate-700
+                font-black
+                shadow-sm
+                hover:shadow-lg
+                transition-all
+              "
+            >
 
-          {/* 4. How It Works */}
-          <section className="mb-24">
-            <h2 className="text-center text-3xl font-bold text-slate-800 mb-12">
-              Simple 4-Step Process
+              <Filter size={18} />
+
+              Filters
+
+            </button>
+
+          </div>
+
+        </section>
+
+        {/* GRID */}
+        <section className="mb-24">
+
+          <div className="
+            grid grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-3
+            gap-8
+          ">
+
+            {filteredTools.map((tool) => (
+              <ToolCard
+                key={tool._id}
+                tool={tool}
+                navigate={navigate}
+              />
+            ))}
+
+          </div>
+
+        </section>
+
+        {/* HOW IT WORKS */}
+        <section>
+
+          <div className="text-center mb-14">
+
+            <h2 className="
+              text-5xl
+              font-black
+              tracking-tight
+              text-slate-900
+              mb-4
+            ">
+              How It Works
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {[
-                {
-                  step: "01",
-                  title: "Search Tool",
-                  desc: "Browse local listings",
-                  icon: <Search />,
-                },
-                {
-                  step: "02",
-                  title: "Select Date",
-                  desc: "Choose your schedule",
-                  icon: <Calendar />,
-                },
-                {
-                  step: "03",
-                  title: "Book & Pay",
-                  desc: "Secure online payment",
-                  icon: <Gauge />,
-                },
-                {
-                  step: "04",
-                  title: "Get Delivered",
-                  desc: "Tool arrives at farm",
-                  icon: <Tractor />,
-                },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="text-center"
-                >
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/50 backdrop-blur-md flex items-center justify-center text-green-600 shadow-inner border border-white/40">
+
+            <p className="
+              text-slate-500
+              max-w-xl
+              mx-auto
+            ">
+              Simple booking process designed for farmers and renters.
+            </p>
+
+          </div>
+
+          <div className="
+            grid grid-cols-1
+            md:grid-cols-4
+            gap-6
+          ">
+
+            {[
+              {
+                step: "01",
+                title: "Search Tool",
+                desc: "Browse nearby farming tools",
+                icon: <Search />,
+              },
+              {
+                step: "02",
+                title: "Select Date",
+                desc: "Choose your booking schedule",
+                icon: <Calendar />,
+              },
+              {
+                step: "03",
+                title: "Book & Pay",
+                desc: "Secure online payment flow",
+                icon: <Gauge />,
+              },
+              {
+                step: "04",
+                title: "Get Delivered",
+                desc: "Receive tool at your farm",
+                icon: <Tractor />,
+              },
+            ].map((item, i) => (
+
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="
+                  relative overflow-hidden
+                  rounded-[36px]
+                  bg-white/80
+                  backdrop-blur-2xl
+                  border border-white
+                  shadow-[0_10px_50px_rgba(15,23,42,0.08)]
+                  p-8
+                  text-center
+                "
+              >
+
+                <div className="
+                  absolute top-0 right-0
+                  w-32 h-32
+                  bg-emerald-100/40
+                  rounded-full blur-3xl
+                " />
+
+                <div className="relative z-10">
+
+                  <div className="
+                    w-20 h-20
+                    mx-auto mb-6
+                    rounded-[28px]
+                    bg-gradient-to-br from-emerald-500 to-green-600
+                    text-white
+                    flex items-center justify-center
+                    shadow-[0_15px_35px_rgba(16,185,129,0.28)]
+                  ">
                     {item.icon}
                   </div>
-                  <h4 className="font-bold text-slate-800">{item.title}</h4>
-                  <p className="text-sm text-slate-500">{item.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </section>
-        </div>
+
+                  <div className="
+                    text-[11px]
+                    uppercase
+                    tracking-[3px]
+                    text-emerald-600
+                    font-black
+                    mb-2
+                  ">
+                    Step {item.step}
+                  </div>
+
+                  <h3 className="
+                    text-2xl
+                    font-black
+                    text-slate-900
+                    mb-3
+                  ">
+                    {item.title}
+                  </h3>
+
+                  <p className="
+                    text-slate-500
+                    leading-relaxed
+                  ">
+                    {item.desc}
+                  </p>
+
+                </div>
+
+              </motion.div>
+
+            ))}
+
+          </div>
+
+        </section>
+
       </div>
+    </div>
   );
 }

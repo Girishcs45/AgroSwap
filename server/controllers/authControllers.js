@@ -60,17 +60,22 @@ export const Signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-      fullName,
-      mobile,
-      email,
-      password: hashedPassword,
-      location: {
-        village,
-        district,
-        state,
-      },
-      agreeToTerms,
-    });
+  fullName,
+  mobile,
+  email,
+  password: hashedPassword,
+
+  // ✅ CLOUDINARY IMAGE URL
+  profileImage: req.file?.path || "",
+
+  location: {
+    village,
+    district,
+    state,
+  },
+
+  agreeToTerms,
+});
 
    
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {

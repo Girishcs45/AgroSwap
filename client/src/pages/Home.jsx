@@ -1,6 +1,6 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useNavigate, } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import CustomButton from "../components/CustomButton";
 import { Search, Psychology } from "@mui/icons-material";
@@ -12,9 +12,7 @@ const Home = () => {
   const [tools, setTools] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const randomTools = [...tools]
-  .sort(() => Math.random() - 0.5)
-  .slice(0, 4);
+  const randomTools = [...tools].sort(() => Math.random() - 0.5).slice(0, 4);
 
   useEffect(() => {
     const fetchTools = async () => {
@@ -120,56 +118,80 @@ const Home = () => {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {randomTools
-              .map((tool) => (
-                <motion.div
-                  key={tool._id}
-                  whileHover={{ scale: 1.03 }}
-                  className="bg-white/40 backdrop-blur-lg border border-white/50 rounded-2xl p-4 shadow-lg hover:shadow-2xl transition-all cursor-pointer"
-                  onClick={() =>
-                    navigate(`/tooldetails/${tool._id}`, { state: tool })
-                  }
-                >
-                  <img
-                    src={tool.image}
-                    alt={tool.name}
-                    className="w-full h-40 object-cover rounded-xl mb-3"
-                  />
+            {randomTools.map((tool) => (
+              <motion.div
+                key={tool._id}
+                whileHover={{ scale: 1.03 }}
+                className={`
+  bg-white/40
+  backdrop-blur-lg
+  border border-white/50
+  rounded-2xl
+  p-4
+  shadow-lg
+  hover:shadow-2xl
+  transition-all
+  cursor-pointer
 
-                  <div className="flex justify-between mb-2">
-                    <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg">
-                      Available
-                    </span>
-                  </div>
+  ${!tool?.isActive ? "opacity-75 grayscale-[0.15]" : ""}
+`}
+                onClick={() =>
+                  navigate(`/tooldetails/${tool._id}`, { state: tool })
+                }
+              >
+                <img
+                  src={tool.image}
+                  alt={tool.name}
+                  className="w-full h-40 object-cover rounded-xl mb-3"
+                />
 
-                  <h3 className="font-bold text-slate-800">{tool.name}</h3>
+                <div className="flex justify-between mb-2">
+                  <span
+                    className={`
+      text-xs
+      px-2 py-1
+      rounded-lg
+      font-bold
 
-                  <p className="text-sm text-slate-500 mb-2">
-                    At {tool.location|| "Nearby"}
-                  </p>
+      ${
+        tool?.isActive
+          ? "bg-emerald-100 text-emerald-700"
+          : "bg-red-100 text-red-600"
+      }
+    `}
+                  >
+                    {tool?.isActive ? "Available" : "Unavailable"}
+                  </span>
+                </div>
 
-                  <p className="text-sm text-slate-500 mb-2">
-                    Owned by {tool.owner.fullName|| "Nearby"}
-                  </p>
+                <h3 className="font-bold text-slate-800">{tool.name}</h3>
 
-                  <div className="flex justify-between items-center">
-                    <span className="text-emerald-600 font-bold">
-                      ₹{tool.price} Per Day
-                    </span>
+                <p className="text-sm text-slate-500 mb-2">
+                  At {tool.location || "Nearby"}
+                </p>
 
-                    <CustomButton
-                      variantType="success"
-                      size="small"
-                      sx={{
-                        borderRadius: "999px",
-                        px: 4,
-                      }}
-                    >
-                      view
-                    </CustomButton>
-                  </div>
-                </motion.div>
-              ))}
+                <p className="text-sm text-slate-500 mb-2">
+                  Owned by {tool.owner.fullName || "Nearby"}
+                </p>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-emerald-600 font-bold">
+                    ₹{tool.price} Per Day
+                  </span>
+
+                  <CustomButton
+                    variantType="success"
+                    size="small"
+                    sx={{
+                      borderRadius: "999px",
+                      px: 4,
+                    }}
+                  >
+                    view
+                  </CustomButton>
+                </div>
+              </motion.div>
+            ))}
           </div>
 
           <div className="flex justify-center mt-12">

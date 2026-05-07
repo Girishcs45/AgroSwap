@@ -40,8 +40,8 @@ const toolSchema = new mongoose.Schema(
     },
 
     image: {
-  type: String,
-},
+      type: String,
+    },
 
     power: {
       type: Number,
@@ -57,10 +57,14 @@ const toolSchema = new mongoose.Schema(
       enum: ["2WD", "4WD"],
     },
 
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    //   required: true,
+      //   required: true,
     },
   },
   { timestamps: true },

@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import CustomButton from "../../components/CustomButton";
-
+import { toast } from "react-toastify";
+import {
+  deleteToolService,
+  toggleToolVisibilityService,
+} from "../../services/tool.services";
 import {
   Zap,
   Fuel,
@@ -80,32 +84,67 @@ const BookingRow = ({ user, range, status }) => (
 export default function ToolDetailsPage() {
   const { id } = useParams();
   const { state: tool } = useLocation();
+  const [deleting, setDeleting] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
   const navigate = useNavigate();
-  const [isActive, setIsActive] = useState(true);
+const toolData = tool;
+if (!toolData) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-slate-500 font-bold">
+        Tool data not found
+      </p>
+    </div>
+  );
+}
+const [isActive, setIsActive] = useState(
+  toolData?.isActive ?? true
+);
 
-  // Fallback dummy data if accessed directly
-  const toolData = tool || {
-    name: "John Deere 5050D",
-    category: "Tractor",
-    price: "850",
-    hp: "50",
-    fuel: "Diesel",
-    drive: "4WD",
-    year: "2023",
-    location: "Pune, Maharashtra",
-    img: "https://images.unsplash.com/photo-1594495894542-a4e1707d7e7c?auto=format&fit=crop&q=80&w=1200",
+const [visibilityLoading, setVisibilityLoading] = useState(false);
+
+const handleToggleVisibility = async () => {
+  try {
+    setVisibilityLoading(true);
+
+    const res = await toggleToolVisibilityService(toolData._id);
+
+    setIsActive(res.tool.isActive);
+
+    toast.success(
+      res.tool.isActive
+        ? "Tool is now active"
+        : "Tool is now paused"
+    );
+  } catch (error) {
+    console.log(error);
+
+    toast.error("Failed to update visibility");
+  } finally {
+    setVisibilityLoading(false);
+  }
+};
+  
+
+  const handleDelete = async () => {
+    try {
+      setDeleting(true);
+
+      await deleteToolService(id);
+
+      setOpenDelete(false);
+
+      toast.success("Tool deleted successfully");
+
+      navigate("/my-dashboard");
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Failed to delete tool");
+    } finally {
+      setDeleting(false);
+    }
   };
-
-  const mockBookings = [
-    { id: 1, user: "Suresh Patil", range: "25 Apr - 28 Apr", status: "Active" },
-    {
-      id: 2,
-      user: "Anil Deshmukh",
-      range: "02 May - 05 May",
-      status: "Upcoming",
-    },
-  ];
-
   // ONLY CHANGED PARTS SHOWN CLEANLY — replace your return JSX with this
 
   return (
@@ -191,7 +230,7 @@ export default function ToolDetailsPage() {
               </span>
               <Switch
                 checked={isActive}
-                onChange={() => setIsActive(!isActive)}
+               onChange={handleToggleVisibility}
                 sx={{
                   "& .MuiSwitch-switchBase.Mui-checked": { color: "#10b981" },
                   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
@@ -207,7 +246,9 @@ export default function ToolDetailsPage() {
                 variantType="primary"
                 size="large"
                 onClick={() =>
-                  navigate(`/edit-tool/${id}`, { state: toolData })
+                  navigate(`/edit-tool/${toolData._id}`, {
+                    state: toolData,
+                  })
                 }
                 startIcon={<Edit3 size={16} />}
                 sx={{
@@ -282,20 +323,78 @@ export default function ToolDetailsPage() {
                 Bookings
               </h3>
 
-              <div className="space-y-4">
-                {mockBookings.map((b) => (
-                  <BookingRow
-                    key={b.id}
-                    user={b.user}
-                    range={b.range}
-                    status={b.status}
-                  />
-                ))}
-              </div>
+              <div className="text-sm text-slate-400 font-medium">
+  No bookings available
+</div>
             </GlassCard>
           </div>
         </div>
       </div>
+      {/* DELETE CONFIRM MODAL */}
+      <AnimatePresence>
+        {openDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center px-4"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-white rounded-[2rem] p-8 max-w-md w-full shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                  <Trash2 className="text-red-500" size={22} />
+                </div>
+
+                <div>
+                  <h2 className="text-xl font-black text-slate-800">
+                    Delete Listing?
+                  </h2>
+
+                  <p className="text-sm text-slate-400">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-red-50 border border-red-100 rounded-2xl p-4 mb-6">
+                <p className="text-sm text-red-600 leading-relaxed">
+                  Deleting this tool will permanently remove:
+                </p>
+
+                <ul className="mt-3 space-y-2 text-sm text-slate-600 list-disc pl-5">
+                  <li>Marketplace listing</li>
+                  <li>Booking history</li>
+                  <li>Tool analytics & stats</li>
+                  <li>Future renter access</li>
+                </ul>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setOpenDelete(false)}
+                  className="px-5 py-2 rounded-xl font-bold text-slate-500 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className={`px-5 py-2 rounded-xl text-white font-bold shadow-lg shadow-red-100 transition-all
+${deleting ? "bg-red-300 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"}`}
+                >
+                  {deleting ? "Deleting..." : "Yes, Delete"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -4,10 +4,13 @@ import cloudinary from "../config/cloudinary.js";
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: "agroswap-tools",
-    allowed_formats: ["jpg", "png", "jpeg"],
-  },
+  params: async (req, file) => ({
+  folder: file.fieldname === "profileImage"
+    ? "agroswap-profile-images"
+    : "agroswap-tools",
+
+  allowed_formats: ["jpg", "png", "jpeg"],
+}),
 });
 
 const upload = multer({ storage });

@@ -42,3 +42,19 @@ export const FetchBookingService = async (filter) => {
     };
   }
 };
+
+export const getBookedDates = async (toolId) => {
+  try {
+
+   const response = await api.get("/booking/booked-dates", {
+      params: { toolId },
+    });
+
+    return response.data;
+
+  } catch (error) {
+    console.error("getBookedDates service error:", error);
+
+    throw error?.response?.data || error;
+  }
+};

@@ -87,44 +87,37 @@ export default function ToolDetailsPage() {
   const [deleting, setDeleting] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const navigate = useNavigate();
-const toolData = tool;
-if (!toolData) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-slate-500 font-bold">
-        Tool data not found
-      </p>
-    </div>
-  );
-}
-const [isActive, setIsActive] = useState(
-  toolData?.isActive ?? true
-);
-
-const [visibilityLoading, setVisibilityLoading] = useState(false);
-
-const handleToggleVisibility = async () => {
-  try {
-    setVisibilityLoading(true);
-
-    const res = await toggleToolVisibilityService(toolData._id);
-
-    setIsActive(res.tool.isActive);
-
-    toast.success(
-      res.tool.isActive
-        ? "Tool is now active"
-        : "Tool is now paused"
+  const toolData = tool;
+  if (!toolData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 font-bold">Tool data not found</p>
+      </div>
     );
-  } catch (error) {
-    console.log(error);
-
-    toast.error("Failed to update visibility");
-  } finally {
-    setVisibilityLoading(false);
   }
-};
-  
+  const [isActive, setIsActive] = useState(toolData?.isActive ?? true);
+
+  const [visibilityLoading, setVisibilityLoading] = useState(false);
+
+  const handleToggleVisibility = async () => {
+    try {
+      setVisibilityLoading(true);
+
+      const res = await toggleToolVisibilityService(toolData._id);
+
+      setIsActive(res.tool.isActive);
+
+      toast.success(
+        res.tool.isActive ? "Tool is now active" : "Tool is now paused",
+      );
+    } catch (error) {
+      console.log(error);
+
+      toast.error("Failed to update visibility");
+    } finally {
+      setVisibilityLoading(false);
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -230,7 +223,7 @@ const handleToggleVisibility = async () => {
               </span>
               <Switch
                 checked={isActive}
-               onChange={handleToggleVisibility}
+                onChange={handleToggleVisibility}
                 sx={{
                   "& .MuiSwitch-switchBase.Mui-checked": { color: "#10b981" },
                   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
@@ -316,16 +309,216 @@ const handleToggleVisibility = async () => {
           {/* RIGHT */}
           <div className="lg:col-span-5">
             <GlassCard
-              className="p-10 h-full bg-white/60 shadow-[0_20px_60px_rgba(0,0,0,0.08)]"
+              className="
+      p-8
+      h-full
+      bg-white/60
+      shadow-[0_20px_60px_rgba(0,0,0,0.08)]
+      space-y-6
+    "
               noHover
             >
-              <h3 className="text-xl font-black text-slate-800 mb-6">
-                Bookings
-              </h3>
+              {/* HEADER */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-black text-slate-800">Bookings</h3>
 
-              <div className="text-sm text-slate-400 font-medium">
-  No bookings available
-</div>
+                <div
+                  className="
+        px-3 py-1
+        rounded-full
+        bg-emerald-100
+        text-emerald-700
+        text-xs
+        font-black
+        uppercase
+        tracking-wide
+      "
+                >
+                  Live
+                </div>
+              </div>
+
+              {/* STATS */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Revenue */}
+                <div
+                  className="
+        rounded-[24px]
+        bg-gradient-to-br
+        from-emerald-500
+        to-green-500
+        p-5
+        text-white
+        shadow-lg
+      "
+                >
+                  <p
+                    className="
+          text-[11px]
+          uppercase
+          tracking-[2px]
+          font-black
+          text-white/80
+        "
+                  >
+                    Total Revenue
+                  </p>
+
+                  <h2 className="text-3xl font-black mt-2">₹24,500</h2>
+                </div>
+
+                {/* Total Bookings */}
+                <div
+                  className="
+        rounded-[24px]
+        bg-white/70
+        border border-white
+        p-5
+      "
+                >
+                  <p
+                    className="
+          text-[11px]
+          uppercase
+          tracking-[2px]
+          font-black
+          text-slate-400
+        "
+                  >
+                    Total Bookings
+                  </p>
+
+                  <h2 className="text-3xl font-black text-slate-800 mt-2">
+                    18
+                  </h2>
+                </div>
+              </div>
+
+              {/* FILTERS */}
+              <div className="flex items-center justify-end gap-2">
+                {["Today", "Upcoming", "Past"].map((item, i) => (
+                  <button
+                    key={i}
+                    className={`
+            px-4 py-2
+            rounded-full
+            text-xs
+            font-black
+            uppercase
+            tracking-wide
+            transition-all
+
+            ${
+              item === "Upcoming"
+                ? `
+                  bg-emerald-500
+                  text-white
+                  shadow-lg shadow-emerald-100
+                `
+                : `
+                  bg-white/70
+                  text-slate-500
+                  border border-white
+                  hover:bg-white
+                `
+            }
+          `}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+
+              {/* BOOKINGS LIST */}
+              <div className="space-y-4">
+                {[1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="
+            p-4
+            rounded-[24px]
+            bg-white/70
+            border border-white
+            hover:shadow-lg
+            transition-all
+          "
+                  >
+                    <div className="flex items-start justify-between">
+                      {/* LEFT */}
+                      <div className="flex items-center gap-3">
+                        <Avatar
+                          src={`https://i.pravatar.cc/150?img=${item + 10}`}
+                          sx={{
+                            width: 50,
+                            height: 50,
+                          }}
+                        />
+
+                        <div>
+                          <h4 className="font-black text-slate-800">
+                            Rahul Patil
+                          </h4>
+
+                          <p
+                            className="
+                  text-xs
+                  text-slate-400
+                  font-semibold
+                  mt-1
+                "
+                          >
+                            12 May → 15 May
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* STATUS */}
+                      <div
+                        className="
+              px-3 py-1
+              rounded-full
+              bg-emerald-100
+              text-emerald-700
+              text-[10px]
+              font-black
+              uppercase
+            "
+                      >
+                        Active
+                      </div>
+                    </div>
+
+                    {/* FOOTER */}
+                    <div
+                      className="
+            mt-4
+            flex items-center justify-between
+          "
+                    >
+                      <p
+                        className="
+              text-sm
+              font-bold
+              text-slate-500
+            "
+                      >
+                        ₹4,500
+                      </p>
+
+                      <button
+                        className="
+              text-xs
+              font-black
+              text-emerald-600
+              hover:underline
+            "
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </GlassCard>
           </div>
         </div>

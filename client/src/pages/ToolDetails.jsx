@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   MapPin,
@@ -27,6 +27,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import { getBookedDates } from '../services/booking.services';
 
 
 // ---------------- COMPONENTS ----------------
@@ -88,7 +89,32 @@ export default function ToolDetails() {
   const { _id } = useParams();
 
   const [bookingType] = useState("day");
-  const [range, setRange] = useState("");
+  const [range, setRange] = useState();
+  const [bookedRanges, setBookedRanges] = useState([]);
+
+  useEffect(() => {
+
+    const fetchBookedDates = async () => {
+      try {
+        const res = await getBookedDates(tool._id);
+
+        const ranges = res.bookedRanges.map((range) => ({
+          from: new Date(range.from),
+          to: new Date(range.to),
+        }));
+
+        setBookedRanges(ranges);
+
+      } catch (error) {
+        console.error("Failed to fetch booked dates", error);
+      }
+    };
+
+    if (tool?._id) {
+      fetchBookedDates();
+    }
+
+  }, [tool]);
 
   const handleConfirmBooking = () => {
     if (!range?.from || !range?.to) {
@@ -194,13 +220,13 @@ export default function ToolDetails() {
                   />
                 </div>
                 {!tool?.isActive && (
-  <div className="mt-3">
-    <Chip
-      label="Currently Unavailable"
-      className="!bg-red-500 !text-white !font-black"
-    />
-  </div>
-)}
+                  <div className="mt-3">
+                    <Chip
+                      label="Currently Unavailable"
+                      className="!bg-red-500 !text-white !font-black"
+                    />
+                  </div>
+                )}
               </motion.div>
 
               {/* ACTIONS */}
@@ -442,18 +468,26 @@ export default function ToolDetails() {
                     ">
 
                       <DayPicker
-  mode="range"
-  selected={range}
-  onSelect={setRange}
-  disabled={
-    tool?.isActive
-      ? { before: new Date() }
-      : true
-  }
-  className={`w-full ${
-    !tool?.isActive ? "opacity-50 pointer-events-none" : ""
-  }`}
-/>
+                        mode="range"
+                        selected={range}
+                        onSelect={setRange}
+                        disabled={
+                          tool?.isActive
+                            ? [
+                              { before: new Date() },
+                              ...bookedRanges,
+                            ]
+                            : true
+                        }
+                        modifiers={{
+                          booked: bookedRanges,
+                        }}
+                        modifiersClassNames={{
+                          booked: "booked-date",
+                        }}
+                        className={`w-full ${!tool?.isActive ? "opacity-50 pointer-events-none" : ""
+                          }`}
+                      />
 
                       {range?.from && (
                         <div className="
@@ -474,14 +508,30 @@ export default function ToolDetails() {
                       )}
 
                     </div>
+                    <div className="flex items-center justify-center gap-2">
+
+                      <div className="
+    w-3.5 h-3.5
+    rounded-full
+    bg-gradient-to-r
+    from-emerald-500
+    to-green-500
+    shadow-sm
+  " />
+
+                      <p className="text-sm font-semibold text-slate-500">
+                        Booked Dates
+                      </p>
+
+                    </div>
 
                     {/* BUTTON */}
-                   <Button
-  fullWidth
-  variant="contained"
-  disabled={!tool?.isActive}
-  onClick={handleConfirmBooking}
-  className={`
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      disabled={!tool?.isActive}
+                      onClick={handleConfirmBooking}
+                      className={`
     !py-5
     !rounded-[24px]
     !text-lg
@@ -489,25 +539,24 @@ export default function ToolDetails() {
     tracking-wide
     transition-all duration-300
 
-    ${
-      tool?.isActive
-        ? `
+    ${tool?.isActive
+                          ? `
           !bg-gradient-to-r !from-emerald-600 !via-green-500 !to-emerald-500
           hover:!from-emerald-700 hover:!to-green-600
           !shadow-[0_15px_40px_rgba(16,185,129,0.35)]
           hover:scale-[1.02]
         `
-        : `
+                          : `
           !bg-slate-300
           !text-slate-500
           cursor-not-allowed
           opacity-80
         `
-    }
+                        }
   `}
->
-  {tool?.isActive ? "Confirm Booking" : "Currently Unavailable"}
-</Button>
+                    >
+                      {tool?.isActive ? "Confirm Booking" : "Currently Unavailable"}
+                    </Button>
 
                     <p className="
                       text-center
@@ -591,25 +640,25 @@ export default function ToolDetails() {
                   <div className="relative w-fit mx-auto">
 
                     <Avatar
-  src={tool?.owner?.profileImage}
-  sx={{
-    width: 96,
-    height: 96,
-    bgcolor: "#16a34a",
-    fontSize: 36,
-    fontWeight: "bold",
+                      src={tool?.owner?.profileImage}
+                      sx={{
+                        width: 96,
+                        height: 96,
+                        bgcolor: "#16a34a",
+                        fontSize: 36,
+                        fontWeight: "bold",
 
-    border: "5px solid #22c55e",
+                        border: "5px solid #22c55e",
 
-    boxShadow: `
+                        boxShadow: `
       0 0 0 5px rgba(34,197,94,0.18),
       0 14px 34px rgba(22,163,74,0.35)
     `,
-  }}
->
-  {!tool?.owner?.profileImage &&
-    tool?.owner?.fullName?.charAt(0)?.toUpperCase()}
-</Avatar>
+                      }}
+                    >
+                      {!tool?.owner?.profileImage &&
+                        tool?.owner?.fullName?.charAt(0)?.toUpperCase()}
+                    </Avatar>
 
                     <div className="
                       absolute bottom-1 right-1

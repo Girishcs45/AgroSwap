@@ -1,5 +1,7 @@
 import Booking from "../models/booking.js";
 import mongoose, { Mongoose } from "mongoose";
+import Tool from "../models/tool.js";
+
 
 export const createBooking = async (req, res) => {
   try {
@@ -69,44 +71,46 @@ export const createBooking = async (req, res) => {
   }
 };
 
-export const SlotInfo = async (req, res) => {
+export const getBookedDates = async (req, res) => {
   try {
-    const { toolId, month } = req.query;
+    const { toolId } = req.query;
 
-    if (!toolId || !month) {
+    if (!toolId) {
       return res.status(400).json({
         success: false,
-        message: "turfId and date are required"
+        message: "toolId is required",
       });
     }
 
-    const tool = await tool.findById(toolId);
-    if (!tool) {
+    const foundTool = await Tool.findById(toolId);
+
+    if (!foundTool) {
       return res.status(404).json({
         success: false,
-        message: "Tool not found"
+        message: "Tool not found",
       });
     }
 
     const bookings = await Booking.find({
       tool: toolId,
-      bookingDate: date
-    }).select("bookedSlots");
+    }).select("fromDate toDate");
 
-    const bookedSlots = bookings.flatMap(booking => booking.bookedSlots);
+    const bookedRanges = bookings.map((booking) => ({
+      from: booking.fromDate,
+      to: booking.toDate,
+    }));
 
     return res.status(200).json({
       success: true,
-      bookedSlots
+      bookedRanges,
     });
 
   } catch (error) {
-    console.error("SlotInfo error:", error);
+    console.error("getBookedDates error:", error);
 
     return res.status(500).json({
       success: false,
-      message: "Server error while fetching slot info",
-      error: error.message
+      message: "Server error while fetching booked dates",
     });
   }
 };

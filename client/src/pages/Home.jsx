@@ -135,9 +135,11 @@ const Home = () => {
 
   ${!tool?.isActive ? "opacity-75 grayscale-[0.15]" : ""}
 `}
-                onClick={() =>
-                  navigate(`/tooldetails/${tool._id}`, { state: tool })
-                }
+                onClick={() => {
+                  if (tool?.isActive) {
+                    navigate(`/tooldetails/${tool._id}`, { state: tool });
+                  }
+                }}
               >
                 <img
                   src={tool.image}
@@ -153,11 +155,10 @@ const Home = () => {
       rounded-lg
       font-bold
 
-      ${
-        tool?.isActive
-          ? "bg-emerald-100 text-emerald-700"
-          : "bg-red-100 text-red-600"
-      }
+      ${tool?.isActive
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-red-100 text-red-600"
+                      }
     `}
                   >
                     {tool?.isActive ? "Available" : "Unavailable"}
@@ -178,17 +179,18 @@ const Home = () => {
                   <span className="text-emerald-600 font-bold">
                     ₹{tool.price} Per Day
                   </span>
-
-                  <CustomButton
-                    variantType="success"
-                    size="small"
-                    sx={{
-                      borderRadius: "999px",
-                      px: 4,
-                    }}
-                  >
-                    view
-                  </CustomButton>
+                  {tool?.isActive && (
+                    <CustomButton
+                      variantType="success"
+                      size="small"
+                      sx={{
+                        borderRadius: "999px",
+                        px: 4,
+                      }}
+                    >
+                      view
+                    </CustomButton>
+                  )}
                 </div>
               </motion.div>
             ))}

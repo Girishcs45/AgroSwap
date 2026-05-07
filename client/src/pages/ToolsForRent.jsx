@@ -94,14 +94,14 @@ const ToolCard = ({ tool, navigate }) => (
           bg-gradient-to-t from-black/60 via-black/10 to-transparent
         " />
         {!tool.isActive && (
-  <div className="
+          <div className="
     absolute inset-0
     bg-black/50
     backdrop-blur-[2px]
     flex items-center justify-center
     z-20
   ">
-    <div className="
+            <div className="
       px-6 py-3
       rounded-2xl
       bg-red-500
@@ -111,10 +111,10 @@ const ToolCard = ({ tool, navigate }) => (
       text-sm
       shadow-xl
     ">
-      Currently Unavailable
-    </div>
-  </div>
-)}
+              Currently Unavailable
+            </div>
+          </div>
+        )}
 
         {/* STATUS */}
         <div className="absolute top-5 left-5">
@@ -231,6 +231,7 @@ const ToolCard = ({ tool, navigate }) => (
 
           <button
             onClick={() =>
+              
               navigate(`/tooldetails/${tool._id}`, { state: tool })
             }
             className="
@@ -248,36 +249,35 @@ const ToolCard = ({ tool, navigate }) => (
           </button>
 
           <button
-  disabled={!tool.isActive}
-  onClick={() =>
-    tool.isActive &&
-    navigate(`/tooldetails/${tool._id}`, { state: tool })
-  }
-  className={`
+            disabled={!tool.isActive}
+            onClick={() =>
+              tool.isActive &&
+              navigate(`/tooldetails/${tool._id}`, { state: tool })
+            }
+            className={`
     py-4
     rounded-[22px]
     text-white
     font-black
     transition-all duration-300
 
-    ${
-      tool.isActive
-        ? `
+    ${tool.isActive
+                ? `
           bg-gradient-to-r from-emerald-600 to-green-500
           hover:from-emerald-700 hover:to-green-600
           shadow-[0_15px_35px_rgba(16,185,129,0.28)]
           hover:scale-[1.02]
         `
-        : `
+                : `
           bg-slate-300
           cursor-not-allowed
           opacity-70
         `
-    }
+              }
   `}
->
-  {tool.isActive ? "Rent Now" : "Unavailable"}
-</button>
+          >
+            {tool.isActive ? "Rent Now" : "Unavailable"}
+          </button>
 
         </div>
 

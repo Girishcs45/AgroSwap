@@ -8,3 +8,31 @@
 .rdp-day_range_middle {
   background-color: #d1fae5 !important;
 }
+.booked-date {
+  background: linear-gradient(
+    135deg,
+    #059669,
+    #22C55E
+  ) !important;
+
+  color: white !important;
+
+  border-radius: 999px !important;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 4px 10px rgba(16, 185, 129, 0.25);
+
+  transition: all 0.2s ease;
+}
+
+.booked-date:hover {
+  transform: scale(1.08);
+
+  background: linear-gradient(
+    135deg,
+    #059669,
+    #16a34a
+  ) !important;
+}

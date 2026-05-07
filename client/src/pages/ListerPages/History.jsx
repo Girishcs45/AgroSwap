@@ -166,7 +166,7 @@ export default function History() {
                       <StatusTag status={booking.status} />
 
                       <button 
-                        onClick={() => navigate(`/tool/${booking.tool._id}`, { state: booking.tool })}
+                        onClick={() => navigate(`/tooldetails/${booking.tool._id}`, { state: booking.tool })}
                         className="flex items-center gap-2 text-emerald-600 font-black text-xs hover:translate-x-1 transition"
                       >
                         View <ChevronRight size={14}/>

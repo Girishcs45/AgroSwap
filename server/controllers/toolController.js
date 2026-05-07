@@ -1,4 +1,5 @@
 import Tool from "../models/tool.js";
+import Booking from "../models/booking.js"
 
 export const CreateTool = async (req, res) => {
   try {
@@ -156,9 +157,8 @@ export const toggleToolVisibility = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Tool ${
-        tool.isActive ? "activated" : "paused"
-      } successfully`,
+      message: `Tool ${tool.isActive ? "activated" : "paused"
+        } successfully`,
       tool,
     });
   } catch (error) {
@@ -167,6 +167,101 @@ export const toggleToolVisibility = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update visibility",
+    });
+  }
+};
+
+export const getSingleToolController = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const tool = await Tool.findById(id);
+
+    if (!tool) {
+      return res.status(404).json({
+        success: false,
+        message: "Tool not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      tool,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch tool",
+    });
+  }
+};
+
+
+export const getToolBookingsController = async (req, res) => {
+  try {
+
+    const { toolId } = req.params;
+
+    const { filter = "all" } = req.query;
+
+    const now = new Date();
+
+    const query = {
+      tool: toolId,
+    };
+
+    if (filter === "active") {
+
+      query.fromDate = { $lte: now };
+
+      query.toDate = { $gte: now };
+    }
+
+    if (filter === "upcoming") {
+
+      query.fromDate = { $gt: now };
+    }
+
+    if (filter === "completed") {
+
+      query.toDate = { $lt: now };
+    }
+
+    const bookings = await Booking.find(query)
+      .populate("user", "fullName")
+      .sort({ createdAt: -1 });
+
+    const allBookings = await Booking.find({
+      tool: toolId,
+    });
+
+    const totalRevenue = Math.round(
+      allBookings.reduce(
+        (acc, booking) =>
+          acc + (booking.totalAmount || 0) / 1.15,
+        0
+      )
+    );
+
+    const totalBookings = allBookings.length;
+
+    res.status(200).json({
+      success: true,
+      totalRevenue,
+      totalBookings,
+      bookings,
+    });
+
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch bookings",
     });
   }
 };

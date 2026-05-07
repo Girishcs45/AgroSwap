@@ -78,3 +78,35 @@ export const toggleToolVisibilityService = async (id) => {
 
   return res.data;
 };
+
+// ---------------- GET TOOL BY ID ----------------
+
+export const getToolByIdService = async (id) => {
+  const res = await api.get(
+    `/tool/gettool/${id}`
+  );
+
+  return res.data;
+};
+
+
+// ---------------- GET TOOL BOOKINGS ----------------
+
+export const getToolBookingsService = async (
+  toolId,
+  filter = "all"
+) => {
+
+  const token = localStorage.getItem("token");
+
+  const res = await api.get(
+    `/tool/toolbookings/${toolId}?filter=${filter}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};

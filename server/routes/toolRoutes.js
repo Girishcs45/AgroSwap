@@ -4,6 +4,8 @@ import {
   CreateTool,
   deleteToolController,
   getAllTools,
+  getSingleToolController,
+  getToolBookingsController,
   getUserTools,
   toggleToolVisibility,
   updateToolController,
@@ -21,12 +23,22 @@ router.post(
 );
 router.get("/getalltools", wrapAsync(getAllTools));
 router.get("/getusertools", verifyToken, wrapAsync(getUserTools));
-// UPDATE TOOL
+
 router.put("/updatetool/:id", verifyToken, wrapAsync(updateToolController));
 
-// DELETE TOOL
 router.delete("/deletetool/:id", verifyToken, wrapAsync(deleteToolController));
 
 router.patch("/toggle-visibility/:id", verifyToken,( toggleToolVisibility));
+
+router.get(
+  "/gettool/:id",
+  wrapAsync(getSingleToolController)
+);
+
+router.get(
+  "/toolbookings/:toolId",
+  verifyToken,
+  wrapAsync(getToolBookingsController)
+);
 
 export default router;

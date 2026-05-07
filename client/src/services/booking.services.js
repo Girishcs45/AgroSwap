@@ -1,4 +1,4 @@
-import api from "../Api/Api";
+import api from "../api/api";
 
 export const CreateBookingService = async (formData) => {
   try {

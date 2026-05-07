@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
   MapPin,
   ShieldCheck,
@@ -12,23 +12,15 @@ import {
   Scale,
   Truck,
   Phone,
-} from 'lucide-react';
+} from "lucide-react";
 
-import {
-  Chip,
-  Avatar,
-  Button,
-  Tabs,
-  Tab,
-  IconButton,
-} from '@mui/material';
+import { Chip, Avatar, Button, Tabs, Tab, IconButton } from "@mui/material";
 
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
-import { getBookedDates } from '../services/booking.services';
-
+import { getBookedDates } from "../services/booking.services";
 
 // ---------------- COMPONENTS ----------------
 
@@ -48,21 +40,25 @@ const GlassCard = ({ children, className }) => (
 );
 
 const InfoPill = ({ icon, label, value }) => (
-  <div className="
+  <div
+    className="
     flex items-center gap-4
     p-5
     bg-white/70
     rounded-[28px]
     border border-white
     shadow-sm
-  ">
-    <div className="
+  "
+  >
+    <div
+      className="
       w-12 h-12
       rounded-2xl
       bg-emerald-100
       flex items-center justify-center
       text-emerald-600
-    ">
+    "
+    >
       {icon}
     </div>
 
@@ -71,13 +67,10 @@ const InfoPill = ({ icon, label, value }) => (
         {label}
       </p>
 
-      <p className="text-sm font-black text-slate-800 mt-1">
-        {value}
-      </p>
+      <p className="text-sm font-black text-slate-800 mt-1">{value}</p>
     </div>
   </div>
 );
-
 
 // ---------------- PAGE ----------------
 
@@ -93,7 +86,6 @@ export default function ToolDetails() {
   const [bookedRanges, setBookedRanges] = useState([]);
 
   useEffect(() => {
-
     const fetchBookedDates = async () => {
       try {
         const res = await getBookedDates(tool._id);
@@ -104,7 +96,6 @@ export default function ToolDetails() {
         }));
 
         setBookedRanges(ranges);
-
       } catch (error) {
         console.error("Failed to fetch booked dates", error);
       }
@@ -113,12 +104,25 @@ export default function ToolDetails() {
     if (tool?._id) {
       fetchBookedDates();
     }
-
   }, [tool]);
+
+  const token = localStorage.getItem("token");
 
   const handleConfirmBooking = () => {
     if (!range?.from || !range?.to) {
       return alert("Select date range");
+    }
+
+    // check login using jwt token
+    if (!token) {
+      navigate("/login", {
+        state: {
+          redirectTo: `/tooldetails/${tool._id}`,
+          toolData: tool,
+        },
+      });
+
+      return;
     }
 
     navigate(`/payment/${tool._id}`, {
@@ -127,7 +131,7 @@ export default function ToolDetails() {
         bookingType,
         fromDate: range.from,
         toDate: range.to,
-      }
+      },
     });
   };
 
@@ -139,10 +143,8 @@ export default function ToolDetails() {
       <div className="absolute top-0 inset-x-0 h-[420px] bg-gradient-to-b from-emerald-100/40 to-transparent pointer-events-none" />
 
       <div className="min-h-screen bg-[#f6f9f8] pt-24 pb-24 px-4 md:px-8 overflow-hidden relative">
-
         {/* BACKGROUND BLOBS */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
-
           <motion.div
             animate={{
               x: [0, 40, 0],
@@ -176,17 +178,13 @@ export default function ToolDetails() {
               rounded-full blur-[120px]
             "
           />
-
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
-
           {/* HERO SECTION */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-
             {/* LEFT */}
             <div className="lg:col-span-7 space-y-6">
-
               {/* IMAGE */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.96 }}
@@ -231,9 +229,7 @@ export default function ToolDetails() {
 
               {/* ACTIONS */}
               <div className="flex justify-between items-center px-2">
-
                 <div className="flex gap-4">
-
                   <IconButton
                     className="
                       !bg-white/80 hover:!bg-white
@@ -275,12 +271,11 @@ export default function ToolDetails() {
                   >
                     <Scale size={20} />
                   </IconButton>
-
                 </div>
 
                 {/* REVIEWS */}
                 <div className="flex -space-x-3">
-                  {[1, 2, 3].map(i => (
+                  {[1, 2, 3].map((i) => (
                     <Avatar
                       key={i}
                       src={`https://i.pravatar.cc/100?img=${i + 10}`}
@@ -288,7 +283,8 @@ export default function ToolDetails() {
                     />
                   ))}
 
-                  <div className="
+                  <div
+                    className="
                     w-11 h-11 rounded-full
                     bg-emerald-100
                     border-[3px] border-white
@@ -296,7 +292,8 @@ export default function ToolDetails() {
                     text-[10px]
                     font-black
                     text-emerald-700
-                  ">
+                  "
+                  >
                     +42
                   </div>
                 </div>
@@ -304,22 +301,29 @@ export default function ToolDetails() {
 
               {/* TABS */}
               <GlassCard className="p-3 bg-white/80">
-
                 <Tabs
                   value={tabValue}
                   onChange={(e, val) => setTabValue(val)}
                   className="px-4 border-b border-slate-100"
                   TabIndicatorProps={{
-                    className: "!bg-emerald-500 h-1 rounded-full"
+                    className: "!bg-emerald-500 h-1 rounded-full",
                   }}
                 >
-                  <Tab label="Overview" className="!font-black !normal-case !text-base !py-5" />
-                  <Tab label="Specifications" className="!font-black !normal-case !text-base !py-5" />
-                  <Tab label="Reviews" className="!font-black !normal-case !text-base !py-5" />
+                  <Tab
+                    label="Overview"
+                    className="!font-black !normal-case !text-base !py-5"
+                  />
+                  <Tab
+                    label="Specifications"
+                    className="!font-black !normal-case !text-base !py-5"
+                  />
+                  <Tab
+                    label="Reviews"
+                    className="!font-black !normal-case !text-base !py-5"
+                  />
                 </Tabs>
 
                 <div className="p-8">
-
                   {tabValue === 0 && (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -358,19 +362,18 @@ export default function ToolDetails() {
 
                   {tabValue === 1 && (
                     <div className="space-y-4">
-
                       {[
                         {
                           label: "Engine HP Range",
-                          value: tool?.power
+                          value: tool?.power,
                         },
                         {
                           label: "Lifting Capacity",
-                          value: "1800 KG"
+                          value: "1800 KG",
                         },
                         {
                           label: "Clutch Type",
-                          value: "Dual Clutch"
+                          value: "Dual Clutch",
                         },
                       ].map((item, index) => (
                         <div
@@ -392,61 +395,61 @@ export default function ToolDetails() {
                           </span>
                         </div>
                       ))}
-
                     </div>
                   )}
-
                 </div>
               </GlassCard>
             </div>
 
             {/* RIGHT */}
             <div className="lg:col-span-5 space-y-6">
-
               <motion.div
                 initial={{ x: 40, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
               >
-
                 {/* TITLE */}
-                <h1 className="
+                <h1
+                  className="
                   text-5xl md:text-6xl
                   font-black
                   tracking-tight
                   text-slate-900
                   leading-[1]
                   mb-4
-                ">
+                "
+                >
                   {tool?.name}
                 </h1>
 
                 {/* LOCATION */}
-                <p className="
+                <p
+                  className="
                   flex items-center gap-2
                   text-slate-500
                   font-semibold
                   text-sm
                   mb-8
-                ">
+                "
+                >
                   <MapPin size={18} className="text-emerald-500" />
                   {tool?.location}
                 </p>
 
                 {/* BOOKING CARD */}
-                <GlassCard className="
+                <GlassCard
+                  className="
                   p-8 md:p-10
                   relative overflow-hidden
                   border border-emerald-100
                   bg-white/85
                   shadow-[0_20px_70px_rgba(16,185,129,0.12)]
-                ">
-
+                "
+                >
                   {/* GLOWS */}
                   <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-300/20 blur-3xl rounded-full" />
                   <div className="absolute bottom-0 left-0 w-44 h-44 bg-sky-300/20 blur-3xl rounded-full" />
 
                   <div className="relative z-10 space-y-8">
-
                     {/* PRICE */}
                     <div>
                       <p className="text-xs uppercase tracking-[4px] text-slate-400 font-black">
@@ -459,24 +462,22 @@ export default function ToolDetails() {
                     </div>
 
                     {/* DATE PICKER */}
-                    <div className="
+                    <div
+                      className="
                       bg-slate-50/80
                       p-5
                       rounded-[28px]
                       border border-slate-100
                       shadow-inner
-                    ">
-
+                    "
+                    >
                       <DayPicker
                         mode="range"
                         selected={range}
                         onSelect={setRange}
                         disabled={
                           tool?.isActive
-                            ? [
-                              { before: new Date() },
-                              ...bookedRanges,
-                            ]
+                            ? [{ before: new Date() }, ...bookedRanges]
                             : true
                         }
                         modifiers={{
@@ -485,18 +486,23 @@ export default function ToolDetails() {
                         modifiersClassNames={{
                           booked: "booked-date",
                         }}
-                        className={`w-full ${!tool?.isActive ? "opacity-50 pointer-events-none" : ""
-                          }`}
+                        className={`w-full ${
+                          !tool?.isActive
+                            ? "opacity-50 pointer-events-none"
+                            : ""
+                        }`}
                       />
 
                       {range?.from && (
-                        <div className="
+                        <div
+                          className="
                           mt-5
                           p-4
                           rounded-2xl
                           bg-white
                           border border-slate-100
-                        ">
+                        "
+                        >
                           <p className="font-bold text-slate-700">
                             From: {range.from.toDateString()}
                           </p>
@@ -506,23 +512,22 @@ export default function ToolDetails() {
                           </p>
                         </div>
                       )}
-
                     </div>
                     <div className="flex items-center justify-center gap-2">
-
-                      <div className="
+                      <div
+                        className="
     w-3.5 h-3.5
     rounded-full
     bg-gradient-to-r
     from-emerald-500
     to-green-500
     shadow-sm
-  " />
+  "
+                      />
 
                       <p className="text-sm font-semibold text-slate-500">
                         Booked Dates
                       </p>
-
                     </div>
 
                     {/* BUTTON */}
@@ -539,53 +544,52 @@ export default function ToolDetails() {
     tracking-wide
     transition-all duration-300
 
-    ${tool?.isActive
-                          ? `
+    ${
+      tool?.isActive
+        ? `
           !bg-gradient-to-r !from-emerald-600 !via-green-500 !to-emerald-500
           hover:!from-emerald-700 hover:!to-green-600
           !shadow-[0_15px_40px_rgba(16,185,129,0.35)]
           hover:scale-[1.02]
         `
-                          : `
+        : `
           !bg-slate-300
           !text-slate-500
           cursor-not-allowed
           opacity-80
         `
-                        }
+    }
   `}
                     >
-                      {tool?.isActive ? "Confirm Booking" : "Currently Unavailable"}
+                      {tool?.isActive
+                        ? "Confirm Booking"
+                        : "Currently Unavailable"}
                     </Button>
 
-                    <p className="
+                    <p
+                      className="
                       text-center
                       text-[10px]
                       text-slate-400
                       font-black
                       uppercase
                       tracking-[3px]
-                    ">
+                    "
+                    >
                       🔒 Secured by AgroSwap Escrow
                     </p>
-
                   </div>
                 </GlassCard>
-
               </motion.div>
             </div>
           </div>
 
           {/* BOTTOM SECTION */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
             {/* MAP */}
             <div className="lg:col-span-8">
-
               <GlassCard className="p-7 bg-white/80">
-
                 <div className="flex items-center justify-between mb-5">
-
                   <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
                     <MapPin className="text-emerald-600" size={20} />
                     Tool Location
@@ -599,15 +603,16 @@ export default function ToolDetails() {
                   >
                     Open Maps →
                   </a>
-
                 </div>
 
-                <div className="
+                <div
+                  className="
                   rounded-[28px]
                   overflow-hidden
                   border border-slate-100
                   shadow-inner
-                ">
+                "
+                >
                   <iframe
                     title="tool-location"
                     loading="lazy"
@@ -615,30 +620,26 @@ export default function ToolDetails() {
                     className="w-full h-[320px]"
                   />
                 </div>
-
               </GlassCard>
-
             </div>
 
             {/* OWNER CARD */}
             <div className="lg:col-span-4">
-
               <GlassCard className="p-0 overflow-hidden bg-white/80">
-
                 {/* HEADER */}
-                <div className="
+                <div
+                  className="
                   relative h-28
                   bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500
-                ">
+                "
+                >
                   <div className="absolute inset-0 bg-black/5" />
                 </div>
 
                 {/* CONTENT */}
                 <div className="px-7 pb-7 -mt-14 relative z-10">
-
                   {/* AVATAR */}
                   <div className="relative w-fit mx-auto">
-
                     <Avatar
                       src={tool?.owner?.profileImage}
                       sx={{
@@ -660,66 +661,71 @@ export default function ToolDetails() {
                         tool?.owner?.fullName?.charAt(0)?.toUpperCase()}
                     </Avatar>
 
-                    <div className="
+                    <div
+                      className="
                       absolute bottom-1 right-1
                       w-8 h-8 rounded-full
                       bg-blue-500
                       border-[3px] border-white
                       flex items-center justify-center
-                    ">
+                    "
+                    >
                       <UserCheck size={14} className="text-white" />
                     </div>
-
                   </div>
 
                   {/* INFO */}
                   <div className="text-center mt-5">
-
                     <h2 className="text-2xl font-black text-slate-900">
                       {tool?.owner?.fullName}
                     </h2>
 
-                    <p className="
+                    <p
+                      className="
                       mt-1
                       text-xs
                       uppercase
                       tracking-[3px]
                       text-emerald-600
                       font-black
-                    ">
+                    "
+                    >
                       Verified Owner
                     </p>
-
                   </div>
 
                   {/* DETAILS */}
                   <div className="mt-7 space-y-4">
-
-                    <div className="
+                    <div
+                      className="
                       flex items-center gap-4
                       p-4
                       rounded-3xl
                       bg-white
                       border border-slate-100
-                    ">
-
-                      <div className="
+                    "
+                    >
+                      <div
+                        className="
                         w-12 h-12
                         rounded-2xl
                         bg-emerald-100
                         flex items-center justify-center
-                      ">
+                      "
+                      >
                         <Phone size={20} className="text-emerald-600" />
                       </div>
 
                       <div>
-                        <p className="
+                        <p
+                          className="
                           text-[10px]
                           uppercase
                           tracking-[2px]
                           text-slate-400
                           font-black
-                        ">
+                        "
+                        >
                           Contact Number
                         </p>
 
@@ -727,34 +733,38 @@ export default function ToolDetails() {
                           {tool?.owner?.mobile}
                         </h4>
                       </div>
-
                     </div>
 
-                    <div className="
+                    <div
+                      className="
                       flex items-center gap-4
                       p-4
                       rounded-3xl
                       bg-white
                       border border-slate-100
-                    ">
-
-                      <div className="
+                    "
+                    >
+                      <div
+                        className="
                         w-12 h-12
                         rounded-2xl
                         bg-sky-100
                         flex items-center justify-center
-                      ">
+                      "
+                      >
                         <MapPin size={20} className="text-sky-600" />
                       </div>
 
                       <div>
-                        <p className="
+                        <p
+                          className="
                           text-[10px]
                           uppercase
                           tracking-[2px]
                           text-slate-400
                           font-black
-                        ">
+                        "
+                        >
                           Location
                         </p>
 
@@ -764,57 +774,51 @@ export default function ToolDetails() {
                             : tool?.location}
                         </h4>
                       </div>
-
                     </div>
-
                   </div>
 
                   {/* FOOTER */}
-                  <div className="
+                  <div
+                    className="
                     mt-5
                     flex items-center justify-center gap-2
                     text-xs
                     text-slate-400
                     font-semibold
-                  ">
+                  "
+                  >
                     <ShieldCheck size={14} />
                     Trusted AgroSwap Member
                   </div>
-
                 </div>
-
               </GlassCard>
-
             </div>
-
           </div>
 
           {/* TRUST STRIP */}
           <section className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-5">
-
             {[
               {
                 icon: <UserCheck />,
                 title: "KYC Verified",
-                sub: "Trusted Farmers"
+                sub: "Trusted Farmers",
               },
               {
                 icon: <ShieldCheck />,
                 title: "Secure Pay",
-                sub: "Escrow Protected"
+                sub: "Escrow Protected",
               },
               {
                 icon: <MapPin />,
                 title: "GPS Tracking",
-                sub: "Live Location"
+                sub: "Live Location",
               },
               {
                 icon: <Truck />,
                 title: "On-Time Delivery",
-                sub: "Guaranteed"
+                sub: "Guaranteed",
               },
             ].map((item, i) => (
-
               <div
                 key={i}
                 className="
@@ -830,30 +834,27 @@ export default function ToolDetails() {
                   transition-all duration-300
                 "
               >
-                <div className="text-emerald-600 mb-3">
-                  {item.icon}
-                </div>
+                <div className="text-emerald-600 mb-3">{item.icon}</div>
 
                 <h5 className="font-black text-slate-900 text-sm">
                   {item.title}
                 </h5>
 
-                <p className="
+                <p
+                  className="
                   text-[10px]
                   text-slate-400
                   font-black
                   uppercase
                   tracking-[2px]
                   mt-1
-                ">
+                "
+                >
                   {item.sub}
                 </p>
-
               </div>
             ))}
-
           </section>
-
         </div>
       </div>
     </>

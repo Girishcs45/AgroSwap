@@ -1,26 +1,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import {LoginService} from "../services/auth.services.js"
+import { useNavigate, useLocation } from "react-router-dom";
+import { LoginService } from "../services/auth.services.js";
 import CustomButton from "../components/CustomButton";
-import { toast } from 'react-toastify';
-import {
-  ShieldCheck,
-  Lock,
-  Eye,
-  EyeOff,
-  Gavel,
-  MapPin,
-} from "lucide-react";
-import {
-  TextField,
-  Button,
-  InputAdornment,
-  IconButton,
-  } from "@mui/material";
+import { toast } from "react-toastify";
+import { ShieldCheck, Lock, Eye, EyeOff, Gavel, MapPin } from "lucide-react";
+import { TextField, Button, InputAdornment, IconButton } from "@mui/material";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [emailOrMobile, setEmailOrMobile] = useState("");
   const [password, setPassword] = useState("");
 
@@ -30,43 +19,44 @@ const LoginPage = () => {
   const glassStyle =
     "bg-white/40 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-[32px]";
 
-  const handleLogin = async(e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
 
     if (!emailOrMobile || !password) {
       toast.error("Please enter mobile/email and password");
-      
+
       return;
     }
     setLoading(true);
     try {
-    const formData = {
-      password,
-      ...(emailOrMobile.includes("@")
-        ? { email: emailOrMobile }
-        : { mobile: emailOrMobile }),
-    };
+      const formData = {
+        password,
+        ...(emailOrMobile.includes("@")
+          ? { email: emailOrMobile }
+          : { mobile: emailOrMobile }),
+      };
 
-    const data = await LoginService(formData);
-    if (data?.success &&data.user)
-              toast.success("Login Successfully")
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+      const data = await LoginService(formData);
+      if (data?.success && data.user) toast.success("Login Successfully");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-    navigate("/");
-  } catch (error) {
-    toast.error(error?.response?.data?.message || "Login failed");
-  } finally {
-    setLoading(false);
+      const redirectTo = location.state?.redirectTo || "/";
+      const toolData = location.state?.toolData;
 
-  }
-  
+      navigate(redirectTo, {
+        state: toolData,
+      });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
-  
-const isMobile = /^[6-9]\d{9}$/.test(emailOrMobile);
-const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrMobile);
-const showError = emailOrMobile !== "" && !isMobile && !isEmail;
+
+  const isMobile = /^[6-9]\d{9}$/.test(emailOrMobile);
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailOrMobile);
+  const showError = emailOrMobile !== "" && !isMobile && !isEmail;
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-emerald-50 via-teal-50 to-sky-100 flex items-center justify-center p-4 md:p-8 overflow-hidden relative font-sans">
       {/* Background Decor Blobs */}
@@ -106,7 +96,7 @@ const showError = emailOrMobile !== "" && !isMobile && !isEmail;
               title="Secure Payments"
               desc="Escrow Protected Transactions"
             />
-            
+
             <TrustPoint
               icon={<MapPin className="text-sky-600" />}
               title="Local Availability"
@@ -147,34 +137,32 @@ const showError = emailOrMobile !== "" && !isMobile && !isEmail;
                 className="space-y-4"
               >
                 <TextField
-  fullWidth
-  label="Mobile Number / Email"
-  value={emailOrMobile}
-  onChange={(e) => {
-  const value = e.target.value;
+                  fullWidth
+                  label="Mobile Number / Email"
+                  value={emailOrMobile}
+                  onChange={(e) => {
+                    const value = e.target.value;
 
-  // If it's numeric input → treat as mobile
-  if (/^\d*$/.test(value)) {
-    if (value.length <= 10) {
-      setEmailOrMobile(value);
-    }
-  } else {
-    // Otherwise allow email typing
-    setEmailOrMobile(value);
-  }
-}}
-  variant="outlined"
-
-  error={showError}
-  helperText={showError ? "Enter valid email or mobile" : ""}
-
-  sx={{
-    "& .MuiOutlinedInput-root": {
-      borderRadius: "16px",
-      backgroundColor: "rgba(255,255,255,0.5)",
-    },
-  }}
-/>
+                    // If it's numeric input → treat as mobile
+                    if (/^\d*$/.test(value)) {
+                      if (value.length <= 10) {
+                        setEmailOrMobile(value);
+                      }
+                    } else {
+                      // Otherwise allow email typing
+                      setEmailOrMobile(value);
+                    }
+                  }}
+                  variant="outlined"
+                  error={showError}
+                  helperText={showError ? "Enter valid email or mobile" : ""}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: "16px",
+                      backgroundColor: "rgba(255,255,255,0.5)",
+                    },
+                  }}
+                />
                 <ul></ul>
 
                 <TextField
@@ -203,7 +191,6 @@ const showError = emailOrMobile !== "" && !isMobile && !isEmail;
             </AnimatePresence>
 
             <div className="flex justify-between items-center">
-            
               <button
                 type="button"
                 onClick={() => navigate("/forgot-password")}
@@ -214,20 +201,20 @@ const showError = emailOrMobile !== "" && !isMobile && !isEmail;
             </div>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-  <CustomButton
-    fullWidth
-    type="submit"
-    variantType="success"
-    size="large"
-    disabled={loading}
-    loading={loading}
-    sx={{
-      fontWeight: 900,
-    }}
-  >
-    Login & Continue
-  </CustomButton>
-</motion.div>
+              <CustomButton
+                fullWidth
+                type="submit"
+                variantType="success"
+                size="large"
+                disabled={loading}
+                loading={loading}
+                sx={{
+                  fontWeight: 900,
+                }}
+              >
+                Login & Continue
+              </CustomButton>
+            </motion.div>
           </form>
 
           <div className="relative my-8 flex items-center">
@@ -237,8 +224,6 @@ const showError = emailOrMobile !== "" && !isMobile && !isEmail;
             </span>
             <div className="flex-grow border-t border-slate-200"></div>
           </div>
-
-          
 
           <div className="mt-8 text-center text-sm font-bold text-slate-500">
             New to AgroSwap?{" "}

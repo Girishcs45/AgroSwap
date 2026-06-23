@@ -26,6 +26,8 @@ import { useNavigate } from "react-router-dom";
 import GlassCard from "../components/GlassCard";
 import BookmarksIcon from "@mui/icons-material/Bookmarks";
 import SearchIcon from "@mui/icons-material/Search";
+import Loading from "../components/Loading";
+
 
 import { getAllTools } from "../services/tool.services";
 
@@ -291,6 +293,7 @@ const ToolCard = ({ tool, navigate }) => (
 // ---------------- PAGE ----------------
 
 export default function ToolsForRent() {
+  const [loading, setLoading] = useState(false);
 
   const [tools, setTools] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -300,10 +303,14 @@ export default function ToolsForRent() {
   useEffect(() => {
     const fetchTools = async () => {
       try {
+        setLoading(true);
+
         const res = await getAllTools();
         setTools(res);
       } catch (error) {
         console.error("Failed to fetch tools:", error);
+      }finally {
+        setLoading(false);
       }
     };
 
@@ -316,6 +323,9 @@ export default function ToolsForRent() {
       : tools.filter((tool) => tool.category === selectedCategory);
 
   return (
+    <>
+        {loading && <Loading />}
+
 
     <div className="
       min-h-screen
@@ -802,5 +812,6 @@ export default function ToolsForRent() {
 
       </div>
     </div>
+    </>
   );
 }

@@ -6,17 +6,19 @@ import CustomButton from "../components/CustomButton";
 import { Search, Psychology } from "@mui/icons-material";
 import { TextField, InputAdornment } from "@mui/material";
 import { getAllTools } from "../services/tool.services";
+import Loading from "../components/Loading";
 
 const Home = () => {
   const navigate = useNavigate();
   const [tools, setTools] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const randomTools = [...tools].sort(() => Math.random() - 0.5).slice(0, 4);
 
   useEffect(() => {
     const fetchTools = async () => {
       try {
+        setLoading(true);
         const res = await getAllTools();
         setTools(res);
       } catch (error) {
@@ -36,6 +38,8 @@ const Home = () => {
     user = null;
   }
   return (
+    <>
+    {loading && <Loading />}
     <div className="relative min-h-screen bg-slate-50 overflow-x-hidden pt-24">
       {/* Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -155,10 +159,11 @@ const Home = () => {
       rounded-lg
       font-bold
 
-      ${tool?.isActive
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-red-100 text-red-600"
-                      }
+      ${
+        tool?.isActive
+          ? "bg-emerald-100 text-emerald-700"
+          : "bg-red-100 text-red-600"
+      }
     `}
                   >
                     {tool?.isActive ? "Available" : "Unavailable"}
@@ -407,6 +412,7 @@ const Home = () => {
         </section>
       </main>
     </div>
+    </>
   );
 };
 
